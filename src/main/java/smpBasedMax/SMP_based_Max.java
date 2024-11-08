@@ -5,9 +5,9 @@ import ij.ImagePlus;
 import ij.WindowManager;
 import ij.gui.GenericDialog;
 import ij.plugin.PlugIn;
-import ij.plugin.ZProjector;
 import ij.io.FileInfo;
 import ij.process.StackConverter;
+
 
 public class SMP_based_Max implements PlugIn {
     @Override
@@ -55,7 +55,9 @@ public class SMP_based_Max implements PlugIn {
         // ZProjecting the current image and show it in a new window
         MaxIntensityProjection projector = new MaxIntensityProjection(inputImage);
         ImagePlus projectedImage = projector.doProjection();
+        ImagePlus zMap = projector.getZmap();
         projectedImage.show();
+        zMap.show();
 
     }
 }
