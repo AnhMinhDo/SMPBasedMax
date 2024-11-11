@@ -2,21 +2,45 @@ package smpBasedMax;
 
 import ij.IJ;
 import ij.ImagePlus;
-import ij.WindowManager;
 import ij.gui.GenericDialog;
 import ij.plugin.PlugIn;
-import ij.io.FileInfo;
 import ij.process.StackConverter;
+
+import java.util.Arrays;
+
 
 
 public class SMP_based_Max implements PlugIn {
     @Override
     public void run(String arg) {
-        // Get the currently active image
-        ImagePlus currentImage = WindowManager.getCurrentImage();
-        if (currentImage == null) {
-            IJ.showMessage("No image open", "Please open an image to use this plugin.");
-            return;
+        final int[] chooser = new int[1];
+        // dialog with button to choose Single file or Multiple file
+        GenericDialog processOptions = new GenericDialog("File Selection");
+        processOptions.addMessage("Choose an option:");
+        processOptions.addButton("Single File", (event) -> chooser[0] = 1);
+        processOptions.addButton("Multiple Files", (event) -> chooser[0] = 2);
+        processOptions.showDialog();
+
+        String[] validFilePath = new String[0];
+        if (chooser[0] == 1) {
+            validFilePath = SmpBasedMaxUtil.handleSingleFile();
+            if (validFilePath != null) {
+                IJ.showMessage("Selected file: " + validFilePath[0]);
+            } else {
+                IJ.showMessage("No file selected for Single File option.");
+            }
+        }
+        if (chooser[0] == 2) {
+            validFilePath = SmpBasedMaxUtil.handleMultipleFiles();
+            if (validFilePath != null) {
+                String[] fileNames = new String[validFilePath.length];
+                for (int i = 0; i < validFilePath.length; i++) {
+                    fileNames[i] = SmpBasedMaxUtil.extractFilename(validFilePath[i]);
+                }
+                IJ.showMessage("Selected file: " + Arrays.toString(fileNames));
+            } else {
+                IJ.showMessage("No file selected for Single File option.");
+            }
         }
 
         // Create a dialog with offset, threshold, and range options
@@ -38,26 +62,20 @@ public class SMP_based_Max implements PlugIn {
                         "Offset: " + offset + "\n" +
                         "Filter size: " + filter_size + "\n" +
                         "Range: " + depth);
-        // get file path
-        FileInfo fileInfo = currentImage.getOriginalFileInfo();
-        String filePath = null;
-        if (fileInfo != null && fileInfo.directory != null && fileInfo.fileName != null) {
-            filePath = fileInfo.directory + fileInfo.fileName;
-            IJ.showMessage("Image Path", "File path of current image:\n" + filePath);
-        } else {
-            IJ.showMessage("File path not available", "The current image may not have a file path (e.g., it was generated or modified in ImageJ).");
-        }
-        // create imagePlus object fromm filePath
-        ImagePlus inputImage = new ImagePlus(filePath);
-        // convert to 16 bit gray scale
-        StackConverter stackConverter = new StackConverter(inputImage);
-        stackConverter.convertToGray16();
-        // ZProjecting the current image and show it in a new window
-        MaxIntensityProjection projector = new MaxIntensityProjection(inputImage);
-        ImagePlus projectedImage = projector.doProjection();
-        ImagePlus zMap = projector.getZmap();
-        projectedImage.show();
-        zMap.show();
 
+        // Perform MIP with filePath in filePathArray
+        for (String filepath : validFilePath) {
+            // create imagePlus object fromm filePath
+            ImagePlus inputImage = new ImagePlus(filepath);
+            // convert to 16 bit gray scale
+            StackConverter stackConverter = new StackConverter(inputImage);
+            stackConverter.convertToGray16();
+            // ZProjecting the current image and show it in a new window
+            MaxIntensityProjection projector = new MaxIntensityProjection(inputImage);
+            ImagePlus projectedImage = projector.doProjection();
+            ImagePlus zMap = projector.getZmap();
+            projectedImage.show();
+            zMap.show();
+        }
     }
 }

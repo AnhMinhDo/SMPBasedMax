@@ -37,7 +37,14 @@ public class SmpBasedMaxUtil {
     static public String[] listFilesInDirectory(String dirPath){
         File dir = new File(dirPath);
         if (dir.exists() && dir.isDirectory()) {
-            return dir.list();
+            File[] files = dir.listFiles();
+            // Convert each file to its absolute path
+            if (files == null) return null;
+            String[] absolutePaths = new String[files.length];
+            for (int i = 0; i < files.length; i++) {
+                absolutePaths[i] = files[i].getAbsolutePath();  // Get absolute path for each file
+            }
+            return absolutePaths;
         } else {
             return null;
         }
@@ -51,4 +58,13 @@ public class SmpBasedMaxUtil {
             return filePathLowerCase.endsWith(".tiff") || filePathLowerCase.endsWith(".tif");
         }
     }
+
+    public static String extractFilename(String path) {
+        int lastSlashIndex = path.lastIndexOf(File.separator);  // Use File.separator for cross-platform support
+        if (lastSlashIndex != -1) {
+            return path.substring(lastSlashIndex + 1);  // Extract the part after the last slash
+        }
+        return path;  // If there is no slash, return the path itself (it might be just a file name)
+    }
+
 }
