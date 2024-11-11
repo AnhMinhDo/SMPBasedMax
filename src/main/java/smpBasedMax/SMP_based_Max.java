@@ -5,7 +5,10 @@ import ij.ImagePlus;
 import ij.gui.GenericDialog;
 import ij.plugin.PlugIn;
 import ij.process.StackConverter;
+import ij.io.FileSaver;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 
 
@@ -74,8 +77,19 @@ public class SMP_based_Max implements PlugIn {
             MaxIntensityProjection projector = new MaxIntensityProjection(inputImage);
             ImagePlus projectedImage = projector.doProjection();
             ImagePlus zMap = projector.getZmap();
-            projectedImage.show();
-            zMap.show();
+            // Save files to output directory
+            try {
+                String resultDir = SmpBasedMaxUtil.createResultDir(filepath);
+                String fileName = SmpBasedMaxUtil.extractFilename(filepath);
+                FileSaver projectedImageTiff = new FileSaver(projectedImage);
+                FileSaver zMapTiff = new FileSaver(zMap);
+                projectedImageTiff.saveAsTiff(resultDir + File.separator +
+                                                    fileName + "_MIP" + ".tif");
+                zMapTiff.saveAsTiff(resultDir + File.separator +
+                        fileName + "_MIP_zmap" + ".tif");
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 }

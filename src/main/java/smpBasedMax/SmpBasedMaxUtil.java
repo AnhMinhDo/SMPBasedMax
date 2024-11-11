@@ -1,9 +1,14 @@
 package smpBasedMax;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import ij.io.OpenDialog;
 import ij.io.DirectoryChooser;
+
 
 
 public class SmpBasedMaxUtil {
@@ -60,11 +65,26 @@ public class SmpBasedMaxUtil {
     }
 
     public static String extractFilename(String path) {
-        int lastSlashIndex = path.lastIndexOf(File.separator);  // Use File.separator for cross-platform support
-        if (lastSlashIndex != -1) {
-            return path.substring(lastSlashIndex + 1);  // Extract the part after the last slash
+        File file = new File(path);
+        String fileNameWithExtension = file.getName();
+        int dotIndex = fileNameWithExtension.lastIndexOf(".");
+        if (dotIndex != -1) {
+            return fileNameWithExtension.substring(0,dotIndex);  // Extract the part before the dot
         }
-        return path;  // If there is no slash, return the path itself (it might be just a file name)
+        return fileNameWithExtension;  // If there is no dot, return the name itself
     }
+
+    // Create the result directory at same dir of the image stack
+    public static String createResultDir (String filePath) throws IOException {
+        File file = new File(filePath);
+        String fileName = extractFilename(filePath);
+        String fileParentDir = file.getParent();
+        Path resultDir = Paths.get(fileParentDir + File.separator + "OUT_" + fileName);
+        Files.createDirectory(resultDir);
+        return resultDir.toString();
+    }
+
+
+
 
 }
