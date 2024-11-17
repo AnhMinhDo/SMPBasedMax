@@ -22,17 +22,40 @@ public class SMP_based_Max implements PlugIn {
         processOptions.addMessage("Choose an option:");
         processOptions.addButton("Single File", (event) -> chooser[0] = 1);
         processOptions.addButton("Multiple Files", (event) -> chooser[0] = 2);
+        processOptions.addStringField("Direction of z-stack (IN or OUT): ","IN", 10);
+        processOptions.addNumericField("Enter envelope stiffness [pixels]:  ",0, 0);
+        processOptions.addNumericField("Enter final filter size [pixels]: ", 0, 0);
+        processOptions.addNumericField("Enter number of ADDITIONAL stacks to be z-smoothed [e.g. 0, 1, 2]",0,0);
+        processOptions.addNumericField("Offset: N planes above (+) or below (-) blanket [pixels]:  ", 0, 0);
+        processOptions.addNumericField("Depth: MIP for N pixels into blanket [pixels]:  ", 0, 0);
         processOptions.showDialog();
 
+        // Retrieve parameter values from dialog
+        String zStackDirection = processOptions.getNextString();
+        double stiffness = processOptions.getNextNumber();
+        double filterSize = processOptions.getNextNumber();
+        int additionalStacks = (int) processOptions.getNextNumber();
+        double offset = processOptions.getNextNumber();
+        double depth =  processOptions.getNextNumber();
+
+        // If users choose Single File
         String[] validFilePath = new String[0];
         if (chooser[0] == 1) {
             validFilePath = SmpBasedMaxUtil.handleSingleFile();
             if (validFilePath != null) {
-                IJ.showMessage("Selected file: " + validFilePath[0]);
+                IJ.showMessage("Selected Parameters and File Path: ",
+                            "Selected file: " + validFilePath[0] + "\n" +
+                                "Direction of z-stack: " + zStackDirection + "\n" +
+                                "Envelope Stiffness: " + stiffness + "\n" +
+                                "Final Filter Size: " + filterSize + "\n" +
+                                "Additional Stacks: " + additionalStacks + "\n" +
+                                "Offset: " + offset + "\n" +
+                                "Depth: " + depth);
             } else {
                 IJ.showMessage("No file selected for Single File option.");
             }
         }
+        // if users choose Multiple Files
         if (chooser[0] == 2) {
             validFilePath = SmpBasedMaxUtil.handleMultipleFiles();
             if (validFilePath != null) {
@@ -40,31 +63,18 @@ public class SMP_based_Max implements PlugIn {
                 for (int i = 0; i < validFilePath.length; i++) {
                     fileNames[i] = SmpBasedMaxUtil.extractFilename(validFilePath[i]);
                 }
-                IJ.showMessage("Selected file: " + Arrays.toString(fileNames));
+                IJ.showMessage("Selected Parameters and File names" ,
+                        "Selected file: " + Arrays.toString(fileNames) + "\n" +
+                                "Direction of z-stack: " + zStackDirection + "\n" +
+                                "Envelope Stiffness: " + stiffness + "\n" +
+                                "Final Filter Size: " + filterSize + "\n" +
+                                "Additional Stacks: " + additionalStacks + "\n" +
+                                "Offset: " + offset + "\n" +
+                                "Depth: " + depth);
             } else {
                 IJ.showMessage("No file selected for Single File option.");
             }
         }
-
-        // Create a dialog with offset, threshold, and range options
-        GenericDialog gd = new GenericDialog("Adjust Parameters");
-        gd.addNumericField("Stiffness:  ",0, 0);
-        gd.addNumericField("Filter size:  ", 0, 0);
-        gd.addNumericField("Offset:  ", 0, 0);
-        gd.addNumericField("Depth:  ", 0, 0);
-        gd.showDialog();
-        // Retrieve values from dialog
-        double stiffness = gd.getNextNumber();
-        double offset = gd.getNextNumber();
-        double filter_size = gd.getNextNumber();
-        double depth =  gd.getNextNumber();
-
-        // Show the results
-        IJ.showMessage("Selected Parameters",
-                "sample Name: " + stiffness + "\n" +
-                        "Offset: " + offset + "\n" +
-                        "Filter size: " + filter_size + "\n" +
-                        "Range: " + depth);
 
         // Perform MIP with filePath in filePathArray
         for (String filepath : validFilePath) {
@@ -77,6 +87,7 @@ public class SMP_based_Max implements PlugIn {
             MaxIntensityProjection projector = new MaxIntensityProjection(inputImage);
             ImagePlus projectedImage = projector.doProjection();
             ImagePlus zMap = projector.getZmap();
+            if(chooser[0] == 1) projectedImage.show();
             // Save files to output directory
             try {
                 String resultDir = SmpBasedMaxUtil.createResultDir(filepath);
