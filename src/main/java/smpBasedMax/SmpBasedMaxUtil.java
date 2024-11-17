@@ -1,5 +1,8 @@
 package smpBasedMax;
 
+
+import java.util.Comparator;
+import java.util.Arrays;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -82,6 +85,31 @@ public class SmpBasedMaxUtil {
         Path resultDir = Paths.get(fileParentDir + File.separator + "OUT_" + fileName);
         Files.createDirectory(resultDir);
         return resultDir.toString();
+    }
+
+    // helper function to select peak by distance
+    protected boolean[] selectPeakByDistance (int[] peakIdx, float[] peakValue, int distance){
+        int peakIdxLength = peakIdx.length;
+        boolean[] keep = new boolean[peakIdxLength];
+        int[]  priority ;
+        return keep;
+    }
+
+    /**
+     * Sorts an array of peak values and returns the original indices in the new sorted order.
+     *
+     * @param peakValues The array of peak values to be sorted
+     * @return int[] An array of indices that reflects the sorted order of the peak values
+     */
+    public int[] sortReturnPeakIndices (float[] peakValues){
+        Integer[] indices = new Integer[peakValues.length];
+        for (int i = 0; i < peakValues.length; i++) {
+            indices[i] = i;
+        }
+        // Sort indices based on the values in the float array
+        Arrays.sort(indices, Comparator.comparingDouble(i -> peakValues[i]));
+
+        return ConvertUtil.convertToPrimitiveInt(indices);
     }
 
 
