@@ -91,13 +91,47 @@ public class SmpBasedMaxUtil {
     }
 
     /**
+     * Find the indices of localMaxima in 1D array of pixels
+     * @param x The float array of pixels
+     * @param distance the distance in integer that peak indices are separated by at least
+     * @return the indices of peaks that satisfied the distance condition
+     */
+    public static int[] findPeak(float[] x, int distance){
+        Result localMax = findLocalMaxima(x);
+        int[] peakIdx = localMax.midpoints;
+        int[] leftEdges = localMax.leftEdges;
+        int[] rightEdges = localMax.rightEdges;
+        float[] peakValues = new float[peakIdx.length];
+        // obtain peak values
+        for (int i = 0; i < peakIdx.length; i++) {
+            peakValues[i] = x[peakIdx[i]];
+        }
+        boolean[] satisfiedArray = selectPeakByDistance(peakIdx,peakValues,distance);
+        int counterTrue = 0;
+        for (int i = 0; i < satisfiedArray.length; i++) {
+            if (satisfiedArray[i]) {
+                counterTrue++;
+            }
+        }
+        int[] peakIdxSatisfiedDistance = new int[counterTrue];
+        int pointer = 0;
+        for (int i = 0; i < satisfiedArray.length; i++) {
+            if (satisfiedArray[i]) {
+                peakIdxSatisfiedDistance[pointer] = peakIdx[i];
+                pointer++;
+            }
+        }
+        return peakIdxSatisfiedDistance;
+    }
+
+    /**
      * Finds local maxima in a 1D array.
      * A maxima are defined as one or more consecutive values that are surrounded by smaller values.
      *
      * @param x The array to search for local maxima.
      * @return A Result object containing indices of midpoints, left edges, and right edges of local maxima.
      */
-    public static Result findLocalMaxima(double[] x) {
+    public static Result findLocalMaxima(float[] x) {
         int size = x.length;
         int maxSize = size / 2; // There can't be more maxima than half the size of the array
 
@@ -142,7 +176,7 @@ public class SmpBasedMaxUtil {
     }
 
     /**
-     * A simple data structure to hold the result of the local maxima search.
+     * A simple data structure to hold the result of the function findLocalMaxima
      */
     public static class Result {
         public final int[] midpoints;
