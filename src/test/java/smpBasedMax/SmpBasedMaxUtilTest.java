@@ -5,6 +5,24 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 class SmpBasedMaxUtilTest {
+    @Test
+    public void testFindLocalMaxima(){
+
+        // test single peak
+        float[] input = {1.0f, 2.0f, 1.0f};
+        SmpBasedMaxUtil.Result result = SmpBasedMaxUtil.findLocalMaxima(input);
+        assertArrayEquals(new int[]{1}, result.midpoints);
+        assertArrayEquals(new int[]{1}, result.leftEdges);
+        assertArrayEquals(new int[]{1}, result.rightEdges);
+
+        // test multiple peaks
+        float[] input2 = {1.0f, 3.0f, 1.0f, 2.0f, 1.0f, 4.0f, 4.0f, 1.0f};
+        SmpBasedMaxUtil.Result result2 = SmpBasedMaxUtil.findLocalMaxima(input2);
+
+        assertArrayEquals(new int[]{1, 3, 5}, result2.midpoints) ;
+        assertArrayEquals(new int[]{1, 3, 5}, result2.leftEdges);
+        assertArrayEquals(new int[]{1, 3, 6}, result2.rightEdges);
+    }
 
     @Test
     public void testSortReturnPeakIndices() {
