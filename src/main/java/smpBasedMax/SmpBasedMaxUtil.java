@@ -3,12 +3,15 @@ package smpBasedMax;
 
 import java.util.Comparator;
 import java.util.Arrays;
+import java.util.ArrayList;
+
 import java.io.File;
 import java.io.IOException;
+
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.Path;
-import java.util.ArrayList;
+
 import ij.io.OpenDialog;
 import ij.io.DirectoryChooser;
 
@@ -87,7 +90,90 @@ public class SmpBasedMaxUtil {
         return resultDir.toString();
     }
 
-    // helper function to select peak by distance
+    /**
+     * Finds local maxima in a 1D array.
+     * A maxima are defined as one or more consecutive values that are surrounded by smaller values.
+     *
+     * @param x The array to search for local maxima.
+     * @return A Result object containing indices of midpoints, left edges, and right edges of local maxima.
+     */
+    public static Result findLocalMaxima(double[] x) {
+        int size = x.length;
+        int maxSize = size / 2; // There can't be more maxima than half the size of the array
+
+        // Preallocate arrays to store potential maxima information
+        ArrayList<Integer> midpoints = new ArrayList<>(maxSize);
+        ArrayList<Integer> leftEdges = new ArrayList<>(maxSize);
+        ArrayList<Integer> rightEdges = new ArrayList<>(maxSize);
+
+        int i = 1;          // Start at second element
+        int iMax = size - 1; // Last element can't be a maxima
+
+        while (i < iMax) {
+            // Check if the previous element is smaller
+            if (x[i - 1] < x[i]) {
+                int iAhead = i + 1;
+
+                // Find the next element that is not equal to x[i]
+                while (iAhead < iMax && x[iAhead] == x[i]) {
+                    iAhead++;
+                }
+
+                // Check if the next unequal element is smaller
+                if (x[iAhead] < x[i]) {
+                    // Store the indices
+                    leftEdges.add(i);
+                    rightEdges.add(iAhead - 1);
+                    midpoints.add((i + (iAhead - 1)) / 2);
+
+                    // Skip samples that can't be maxima
+                    i = iAhead;
+                }
+            }
+            i++;
+        }
+
+        // Convert lists to arrays
+        int[] midpointsArray = midpoints.stream().mapToInt(Integer::intValue).toArray();
+        int[] leftEdgesArray = leftEdges.stream().mapToInt(Integer::intValue).toArray();
+        int[] rightEdgesArray = rightEdges.stream().mapToInt(Integer::intValue).toArray();
+
+        return new Result(midpointsArray, leftEdgesArray, rightEdgesArray);
+    }
+
+    /**
+     * A simple data structure to hold the result of the local maxima search.
+     */
+    public static class Result {
+        public final int[] midpoints;
+        public final int[] leftEdges;
+        public final int[] rightEdges;
+
+        public Result(int[] midpoints, int[] leftEdges, int[] rightEdges) {
+            this.midpoints = midpoints;
+            this.leftEdges = leftEdges;
+            this.rightEdges = rightEdges;
+        }
+    }
+
+    /**
+     * Helper function to select peaks based on a minimum distance requirement.
+     * <p>
+     * This method processes an array of peak indices (`peakIdx`) and their corresponding
+     * values (`peakValue`) to determine which peaks should be kept or discarded. The
+     * decision is based on a specified minimum distance between peaks. Peaks with a higher
+     * value are given priority when there are conflicts, keeping them over lower-value peaks
+     * if they fall within the specified distance.
+     * </p>
+     *
+     * @param peakIdx    An array of integers representing the indices of detected peaks in a 1D signal.
+     * @param peakValue  A float array representing the values or priorities of each corresponding peak.
+     *                   Peaks with higher values have a higher priority when considering conflicts.
+     * @param distance   An integer specifying the minimum distance required between peaks.
+     *                   Peaks that are closer than this distance will be evaluated based on priority.
+     * @return A boolean array of the same length as `peakIdx` where each entry indicates whether
+     *         the corresponding peak should be kept (`true`) or discarded (`false`).
+     */
     public static boolean[] selectPeakByDistance (int[] peakIdx, float[] peakValue, int distance){
         int peakIdxLength = peakIdx.length;
         boolean[] keep = new boolean[peakIdxLength];
