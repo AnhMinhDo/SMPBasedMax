@@ -17,4 +17,53 @@ class SmpBasedMaxUtilTest {
         // Assert that the indices are sorted based on peakValues
         assertArrayEquals(new int[]{0, 2, 1}, result);
     }
+
+    @Test
+    public void testSelectByPeakDistance() {
+        // Test case 1: Basic example with distinct peaks and sufficient distance
+        int[] peaks1 = {1, 3, 7, 10, 14};
+        float[] priority1 = {0.9f, 0.5f, 0.8f, 0.6f, 0.3f};
+        int distance1 = 3;
+        boolean[] expected1 = {true, false, true, false, false};
+
+        boolean[] result1 = SmpBasedMaxUtil.selectPeakByDistance(peaks1, priority1, distance1);
+        assertArrayEquals(expected1, result1);
+
+        // Test case 2: Peaks with very close distances
+        int[] peaks2 = {1, 2, 3, 4, 5};
+        float[] priority2 = {0.1f, 0.9f, 0.5f, 0.3f, 0.7f};
+        int distance2 = 2;
+        boolean[] expected2 = {false, true, false, false, false};
+
+        boolean[] result2 = SmpBasedMaxUtil.selectPeakByDistance(peaks2, priority2, distance2);
+        assertArrayEquals(expected2, result2);
+
+        // Test case 3: Peaks with large distance, should keep all
+        int[] peaks3 = {2, 5, 10, 15, 20};
+        float[] priority3 = {0.8f, 0.4f, 0.9f, 0.3f, 0.7f};
+        int distance3 = 5;
+        boolean[] expected3 = {true, true, true, true, true};
+
+        boolean[] result3 = SmpBasedMaxUtil.selectPeakByDistance(peaks3, priority3, distance3);
+        assertArrayEquals(expected3, result3);
+
+        // Test case 4: Single peak
+        int[] peaks4 = {5};
+        float[] priority4 = {1.0f};
+        int distance4 = 1;
+        boolean[] expected4 = {true};
+
+        boolean[] result4 = SmpBasedMaxUtil.selectPeakByDistance(peaks4, priority4, distance4);
+        assertArrayEquals(expected4, result4);
+
+        // Test case 5: No peaks
+        int[] peaks5 = {};
+        float[] priority5 = {};
+        int distance5 = 2;
+        boolean[] expected5 = {};
+
+        boolean[] result5 = SmpBasedMaxUtil.selectPeakByDistance(peaks5, priority5, distance5);
+        assertArrayEquals(expected5, result5);
+    }
+
 }
