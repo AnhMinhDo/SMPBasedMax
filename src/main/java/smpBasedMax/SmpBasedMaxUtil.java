@@ -88,10 +88,34 @@ public class SmpBasedMaxUtil {
     }
 
     // helper function to select peak by distance
-    protected boolean[] selectPeakByDistance (int[] peakIdx, float[] peakValue, int distance){
+    public static boolean[] selectPeakByDistance (int[] peakIdx, float[] peakValue, int distance){
         int peakIdxLength = peakIdx.length;
         boolean[] keep = new boolean[peakIdxLength];
-        int[]  priority ;
+        Arrays.fill(keep, true);
+
+        int[] priorityToPosition = sortReturnPeakIndices(peakValue);
+        // Highest priority first -> iterate in reverse order (decreasing)
+        for (int i = peakIdxLength - 1; i >= 0; i--) {
+            // Translate `i` to `j`
+            int j = priorityToPosition[i];
+            if (!keep[j]) {
+                continue;  // Skip evaluation for peak already marked as "don't keep"
+            }
+
+            // Flag earlier peaks for removal until minimal distance is exceeded
+            int k = j - 1;
+            while (k >= 0 && peakIdx[j] - peakIdx[k] < distance) {
+                keep[k] = false;
+                k--;
+            }
+
+            // Flag later peaks for removal until minimal distance is exceeded
+            k = j + 1;
+            while (k < peakIdxLength && peakIdx[k] - peakIdx[j] < distance) {
+                keep[k] = false;
+                k++;
+            }
+        }
         return keep;
     }
 
@@ -101,7 +125,7 @@ public class SmpBasedMaxUtil {
      * @param peakValues The array of peak values to be sorted
      * @return int[] An array of indices that reflects the sorted order of the peak values
      */
-    public int[] sortReturnPeakIndices (float[] peakValues){
+    public static int[] sortReturnPeakIndices (float[] peakValues){
         Integer[] indices = new Integer[peakValues.length];
         for (int i = 0; i < peakValues.length; i++) {
             indices[i] = i;
