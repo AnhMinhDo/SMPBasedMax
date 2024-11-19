@@ -1,6 +1,6 @@
 # Smooth Manifold based Maximum Intensity Projection
 
-## Porject Classes Overview:
+## Project Classes Overview:
 [![Current Project classes](./src/main/resources/SMPBasedMax_classes.png)]
 
 **SMP_based_Max**: Main class for the plugin, handle UI related processes.
