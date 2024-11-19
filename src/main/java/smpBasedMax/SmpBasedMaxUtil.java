@@ -224,14 +224,14 @@ public class SmpBasedMaxUtil {
 
             // Flag earlier peaks for removal until minimal distance is exceeded
             int k = j - 1;
-            while (k >= 0 && peakIdx[j] - peakIdx[k] < distance) {
+            while (k >= 0 && peakIdx[j] - peakIdx[k] <= distance) {
                 keep[k] = false;
                 k--;
             }
 
             // Flag later peaks for removal until minimal distance is exceeded
             k = j + 1;
-            while (k < peakIdxLength && peakIdx[k] - peakIdx[j] < distance) {
+            while (k < peakIdxLength && peakIdx[k] - peakIdx[j] <= distance) {
                 keep[k] = false;
                 k++;
             }
