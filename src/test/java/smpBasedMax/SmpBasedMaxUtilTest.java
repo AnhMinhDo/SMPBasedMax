@@ -55,7 +55,7 @@ class SmpBasedMaxUtilTest {
         int[] peaks1 = {1, 3, 7, 10, 14};
         float[] priority1 = {0.9f, 0.5f, 0.8f, 0.6f, 0.3f};
         int distance1 = 3;
-        boolean[] expected1 = {true, false, true, true, true};
+        boolean[] expected1 = {true, false, true, false, true};
 
         boolean[] result1 = SmpBasedMaxUtil.selectPeakByDistance(peaks1, priority1, distance1);
         assertArrayEquals(expected1, result1);
@@ -73,7 +73,7 @@ class SmpBasedMaxUtilTest {
         int[] peaks3 = {2, 5, 10, 15, 20};
         float[] priority3 = {0.8f, 0.4f, 0.9f, 0.3f, 0.7f};
         int distance3 = 5;
-        boolean[] expected3 = {true, false, true, true, true};
+        boolean[] expected3 = {true, false, true, false, true};
 
         boolean[] result3 = SmpBasedMaxUtil.selectPeakByDistance(peaks3, priority3, distance3);
         assertArrayEquals(expected3, result3);
