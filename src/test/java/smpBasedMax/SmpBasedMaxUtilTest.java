@@ -8,12 +8,12 @@ class SmpBasedMaxUtilTest {
     @Test
     public void testFindPeaks(){
         float[] input = {1.0f, 3.0f, 1.0f, 2.0f, 1.0f, 4.0f, 4.0f, 1.0f};
-        int distance = 2;
+        int distance = 1;
         int[] output1 = SmpBasedMaxUtil.findPeak(input, distance);
         assertArrayEquals(output1, new int[]{1, 3, 5});
 
         float[] input2 = {1.0f, 3.0f, 1.0f, 2.0f, 1.0f, 4.0f, 4.0f, 1.0f};
-        int distance2 = 3;
+        int distance2 = 2;
         int[] output2 = SmpBasedMaxUtil.findPeak(input2, distance2);
         assertArrayEquals(output2, new int[]{1, 5});
 
