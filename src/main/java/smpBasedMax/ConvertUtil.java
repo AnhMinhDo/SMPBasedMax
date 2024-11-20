@@ -15,6 +15,19 @@ public class ConvertUtil {
             return result;
         }
 
+    /**
+     * Convert a Double[] to float[]
+     * @param doubleArray the double array
+     * @return float[] the primitive float array
+     */
+    public static float[] convertToPrimitiveFloat (double[] doubleArray) {
+        float[] result = new float[doubleArray.length];
+        for (int i = 0; i < doubleArray.length; i++) {
+            result[i] = (float) doubleArray[i];
+        }
+        return result;
+    }
+
     public static double[] transpose1D(double[] array, int rows, int cols) {
         double[] transposed = new double[rows * cols];
 
