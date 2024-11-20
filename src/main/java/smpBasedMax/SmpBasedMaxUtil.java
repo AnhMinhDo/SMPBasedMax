@@ -101,11 +101,7 @@ public class SmpBasedMaxUtil {
         int[] peakIdx = localMax.midpoints;
         int[] leftEdges = localMax.leftEdges;
         int[] rightEdges = localMax.rightEdges;
-        float[] peakValues = new float[peakIdx.length];
-        // obtain peak values
-        for (int i = 0; i < peakIdx.length; i++) {
-            peakValues[i] = x[peakIdx[i]];
-        }
+        float[] peakValues = ConvertUtil.extractElementsByIndices(x, peakIdx);
         boolean[] satisfiedArray = selectPeakByDistance(peakIdx,peakValues,distance);
         int counterTrue = 0;
         for (int i = 0; i < satisfiedArray.length; i++) {
@@ -255,6 +251,7 @@ public class SmpBasedMaxUtil {
 
         return ConvertUtil.convertToPrimitiveInt(indices);
     }
+
 
 
 
