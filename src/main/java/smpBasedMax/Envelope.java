@@ -4,8 +4,10 @@ import org.apache.commons.math3.analysis.polynomials.PolynomialFunction;
 import org.apache.commons.math3.analysis.interpolation.HermiteInterpolator;
 
 public class Envelope {
-    public static float[] yUpper (float[] signal, int np){
-        return new float[signal.length];
+    public static float[] yUpper1D (float[] signal, int distance){
+        int[] peakIdx = SmpBasedMaxUtil.findPeak(signal, distance);
+        float[] peakValues = ConvertUtil.extractElementsByIndices(signal, peakIdx);
+        return splineInterpolate(peakIdx,peakValues,signal.length);
     }
 
     /**
