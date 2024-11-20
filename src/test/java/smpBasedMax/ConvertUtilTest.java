@@ -18,7 +18,14 @@ class ConvertUtilTest {
         int[] emptyExpected = {};
         int[] emptyActual = ConvertUtil.convertToPrimitiveInt(emptyInput);
         assertArrayEquals(emptyExpected, emptyActual);
-
+    }
+    @Test
+    void testExtractElementsByIndices(){
+        int[] inputIdx1 = new int[]{0, 2, 5, 7};
+        float[] inputValues1 = new float[]{1f,2f,3f,4f,5f, 6f, 7f, 8f};
+        float[] expected = new float[]{1f, 3f, 6f, 8f};
+        float[] actual = ConvertUtil.extractElementsByIndices(inputValues1, inputIdx1);
+        assertArrayEquals(expected, actual);
     }
 
 }
