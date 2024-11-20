@@ -1,18 +1,21 @@
 package smpBasedMax;
 
-import org.apache.commons.math3.analysis.interpolation.SplineInterpolator;
 import org.apache.commons.math3.analysis.polynomials.PolynomialFunction;
-import org.apache.commons.math3.analysis.polynomials.PolynomialSplineFunction;
 import org.apache.commons.math3.analysis.interpolation.HermiteInterpolator;
 
 public class Envelope {
-
     public static float[] yUpper (float[] signal, int np){
-        float[] y = new float[signal.length];
-        return y;
-    };
+        return new float[signal.length];
+    }
 
-    public static float[] SplineInterpolate(int[] x, float[] y, int numberOfDataPoints){
+    /**
+     * perform Polynomial Interpolation base on the peaks of the signal
+     * @param x integer array of peak indices in the original signal array
+     * @param y float array of peak values
+     * @param numberOfDataPoints Number of elements in the original signal array
+     * @return new signal array that has been smoothed based on the given peaks
+     */
+    public static float[] splineInterpolate(int[] x, float[] y, int numberOfDataPoints){
         // Convert int[] to double[] and float[] to double[]
         double[] xDouble = new double[x.length];
         double[] yDouble = new double[y.length];
@@ -26,18 +29,14 @@ public class Envelope {
             interpolator.addSamplePoint(xDouble[i],new double[]{yDouble[i]});
         }
         // get the polynomial function
-        PolynomialFunction functionPoly = interpolator.getPolynomials()[];
-        // Compute the value for all the dataPoints
-        double[] xFinalDouble = new double[xDouble.length];
-        for (int i = 0; i < xDouble.length; i++) {
-            xFinalDouble[i] = interpolator.value(i);
-        }
-        // Convert xFinalDouble from double[] to float[]
-        float[] xReturn = new float[xFinalDouble.length];
-        for (int i = 0; i < xReturn.length; i++) {
-            xReturn[i] = (float) xFinalDouble[i];
-        }
-        return xReturn;
-    }
+        PolynomialFunction[] polynomials = interpolator.getPolynomials();
+        PolynomialFunction polynomial = polynomials[0];
 
+        // Compute the value for all the dataPoints
+        double[] xFinalDouble = new double[numberOfDataPoints];
+        for (int i = 0; i < numberOfDataPoints; i++) {
+            xFinalDouble[i] = polynomial.value(i);
+        }
+        return ConvertUtil.convertToPrimitiveFloat(xFinalDouble);
+    }
 }
