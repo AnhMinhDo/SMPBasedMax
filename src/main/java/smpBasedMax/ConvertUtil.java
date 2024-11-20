@@ -14,4 +14,16 @@ public class ConvertUtil {
             }
             return result;
         }
+
+    public static double[] transpose1D(double[] array, int rows, int cols) {
+        double[] transposed = new double[rows * cols];
+
+        for (int r = 0; r < rows; r++) {
+            for (int c = 0; c < cols; c++) {
+                // Map the original 1D index to the transposed 1D index
+                transposed[c * rows + r] = array[r * cols + c];
+            }
+        }
+        return transposed;
+    }
 }
