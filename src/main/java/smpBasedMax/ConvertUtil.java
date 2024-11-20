@@ -39,4 +39,13 @@ public class ConvertUtil {
         }
         return transposed;
     }
+
+    public static float[] extractElementsByIndices(float[] original, int[] indices) {
+        float[] newArray = new float[indices.length];
+        for (int i = 0; i < indices.length; i++) {
+            newArray[i] = original[indices[i]];
+        }
+        return newArray;
+    }
+
 }
