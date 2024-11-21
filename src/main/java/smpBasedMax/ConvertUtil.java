@@ -28,8 +28,8 @@ public class ConvertUtil {
         return result;
     }
 
-    public static double[] transpose1D(double[] array, int rows, int cols) {
-        double[] transposed = new double[rows * cols];
+    public static float[] transpose1D(float[] array, int rows, int cols) {
+        float[] transposed = new float[rows * cols];
 
         for (int r = 0; r < rows; r++) {
             for (int c = 0; c < cols; c++) {
