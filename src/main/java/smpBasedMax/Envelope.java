@@ -128,6 +128,56 @@ public class Envelope {
     }
 
     /**
+     * Finds local minima in a 1D array.
+     * A minima are defined as one or more consecutive values that are surrounded by larger values.
+     *
+     * @param x The array to search for local minima.
+     * @return A Result object containing indices of midpoints, left edges, and right edges of local minima.
+     */
+    public static Result findLocalMinima(float[] x) {
+        int size = x.length;
+        int maxSize = size / 2; // There can't be more minima than half the size of the array
+
+        // Preallocate arrays to store potential maxima information
+        ArrayList<Integer> midpoints = new ArrayList<>(maxSize);
+        ArrayList<Integer> leftEdges = new ArrayList<>(maxSize);
+        ArrayList<Integer> rightEdges = new ArrayList<>(maxSize);
+
+        int i = 1;          // Start at second element
+        int iMax = size - 1; // Last element can't be a maxima
+
+        while (i < iMax) {
+            // Check if the previous element is smaller
+            if (x[i - 1] > x[i]) {
+                int iAhead = i + 1;
+
+                // Find the next element that is not equal to x[i]
+                while (iAhead < iMax && x[iAhead] == x[i]) {
+                    iAhead++;
+                }
+
+                // Check if the next unequal element is larger
+                if (x[iAhead] > x[i]) {
+                    // Store the indices
+                    leftEdges.add(i);
+                    rightEdges.add(iAhead - 1);
+                    midpoints.add((i + (iAhead - 1)) / 2);
+
+                    // Skip samples that can't be minima
+                    i = iAhead;
+                }
+            }
+            i++;
+        }
+        // Convert lists to arrays
+        int[] midpointsArray = midpoints.stream().mapToInt(Integer::intValue).toArray();
+        int[] leftEdgesArray = leftEdges.stream().mapToInt(Integer::intValue).toArray();
+        int[] rightEdgesArray = rightEdges.stream().mapToInt(Integer::intValue).toArray();
+
+        return new Result(midpointsArray, leftEdgesArray, rightEdgesArray);
+    }
+
+    /**
      * A simple data structure to hold the result of the function findLocalMaxima
      */
     public static class Result {
@@ -192,10 +242,58 @@ public class Envelope {
     }
 
     /**
-     * Sorts an array of peak values and returns the original indices in the new sorted order.
+     * Helper function to select peaks based on a minimum distance requirement.
+     * <p>
+     * This method processes an array of trough indices (`troughIdx`) and their corresponding
+     * values (`troughValue`) to determine which trough should be kept or discarded. The
+     * decision is based on a specified minimum distance between troughs. Troughs with a lower
+     * value are given priority when there are conflicts, keeping them over higher-value trough
+     * if they fall within the specified distance.
+     * </p>
+     *
+     * @param troughIdx    An array of integers representing the indices of detected troughs in a 1D signal.
+     * @param troughValue  A float array representing the values or priorities of each corresponding trough.
+     *                   Troughs with lower values have a higher priority when considering conflicts.
+     * @param distance   An integer specifying the minimum distance required between troughs.
+     *                   Troughs that are closer than this distance will be evaluated based on priority.
+     * @return A boolean array of the same length as `troughIdx` where each entry indicates whether
+     *         the corresponding trough should be kept (`true`) or discarded (`false`).
+     */
+    public static boolean[] selectTroughByDistance (int[] troughIdx, float[] troughValue, int distance){
+        int troughIdxLength = troughIdx.length;
+        boolean[] keep = new boolean[troughIdxLength];
+        Arrays.fill(keep, true);
+
+        int[] priorityToPosition = sortReturnPeakIndices(troughValue);
+        // Highest priority first -> iterate in forward order (increasing)
+        for (int i = 0; i <= troughIdxLength - 1; i++) {
+            // Translate `i` to `j`
+            int j = priorityToPosition[i];
+            if (!keep[j]) {
+                continue;  // Skip evaluation for trough already marked as "don't keep"
+            }
+
+            // Flag earlier troughs for removal until minimal distance is exceeded
+            int k = j - 1;
+            while (k >= 0 && troughIdx[j] - troughIdx[k] <= distance) {
+                keep[k] = false;
+                k--;
+            }
+
+            // Flag later troughs for removal until minimal distance is exceeded
+            k = j + 1;
+            while (k < troughIdxLength && troughIdx[k] - troughIdx[j] <= distance) {
+                keep[k] = false;
+                k++;
+            }
+        }
+        return keep;
+    }
+    /**
+     * Sorts an array of peak or trough values and returns the original indices in the new sorted order.
      *
      * @param peakValues The array of peak values to be sorted
-     * @return int[] An array of indices that reflects the sorted order of the peak values
+     * @return int[] An array of indices that reflects the sorted order of the peak or trough values
      */
     public static int[] sortReturnPeakIndices (float[] peakValues){
         Integer[] indices = new Integer[peakValues.length];
