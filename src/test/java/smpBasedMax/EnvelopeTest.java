@@ -16,6 +16,15 @@ class EnvelopeTest {
     }
 
     @Test
+    void testyLower1D(){
+        float[] signalValues = new float[]{4.0f, 2.0f, 4.0f, 3.0f, 4.0f, 1.0f, 1.0f, 4.0f};
+        int distance = 1;
+        float[] actual = Envelope.yLower1D(signalValues, distance);
+        float[] expected = new float[]{0.3750f, 2.0000f, 2.8750f, 3.0000f, 2.3750f, 1.0000f, -1.1250f, -4.0000f};
+        assertArrayEquals(expected, actual);
+    }
+
+    @Test
     void testSplineInterpolation() {
         float[] signalValues = new float[]{1f,3f,1f,2f,1f,4f,4f,1f};
         int[] peakIdx = new int[]{1,3,5};
