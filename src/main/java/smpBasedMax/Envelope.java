@@ -14,6 +14,12 @@ public class Envelope {
         return splineInterpolate(peakIdx,peakValues,signal.length);
     }
 
+    public static float[] yLower1D (float[] signal, int distance){
+        int[] troughIdx = findTrough(signal, distance);
+        float[] troughValues = ConvertUtil.extractElementsByIndices(signal, troughIdx);
+        return splineInterpolate(troughIdx,troughValues,signal.length);
+    }
+
     /**
      * perform Polynomial Interpolation base on the peaks of the signal
      * @param x integer array of peak indices in the original signal array
@@ -74,6 +80,36 @@ public class Envelope {
             }
         }
         return peakIdxSatisfiedDistance;
+    }
+
+    /**
+     * Find the indices of localMinima in 1D array of z-levels
+     * @param x The float array of z-levels
+     * @param distance the distance in integer that trough indices are separated by at least
+     * @return the indices of troughs that satisfied the distance condition
+     */
+    public static int[] findTrough(float[] x, int distance){
+        Result localMin = findLocalMinima(x);
+        int[] troughIdx = localMin.midpoints;
+        int[] leftEdges = localMin.leftEdges;
+        int[] rightEdges = localMin.rightEdges;
+        float[] troughValues = ConvertUtil.extractElementsByIndices(x, troughIdx);
+        boolean[] satisfiedArray = selectTroughByDistance(troughIdx,troughValues,distance);
+        int counterTrue = 0;
+        for (int i = 0; i < satisfiedArray.length; i++) {
+            if (satisfiedArray[i]) {
+                counterTrue++;
+            }
+        }
+        int[] troughIdxSatisfiedDistance = new int[counterTrue];
+        int pointer = 0;
+        for (int i = 0; i < satisfiedArray.length; i++) {
+            if (satisfiedArray[i]) {
+                troughIdxSatisfiedDistance[pointer] = troughIdx[i];
+                pointer++;
+            }
+        }
+        return troughIdxSatisfiedDistance;
     }
 
     /**
@@ -242,7 +278,7 @@ public class Envelope {
     }
 
     /**
-     * Helper function to select peaks based on a minimum distance requirement.
+     * Helper function to select troughs based on a minimum distance requirement.
      * <p>
      * This method processes an array of trough indices (`troughIdx`) and their corresponding
      * values (`troughValue`) to determine which trough should be kept or discarded. The
