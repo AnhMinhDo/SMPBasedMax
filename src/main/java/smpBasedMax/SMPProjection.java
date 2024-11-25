@@ -2,6 +2,7 @@ package smpBasedMax;
 
 
 import ij.ImagePlus;
+import ij.ImageStack;
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 import ij.plugin.filter.RankFilters;
@@ -72,7 +73,6 @@ public class SMPProjection {
                 this.numberOfRows,
                 this.distance,
                 this.numberOfSlices);
-
 //        // Perform median filter
 //        RankFilters rf = new RankFilters();
 //        // Set the filter type to Median and the radius to radius, other parameter is set according to the default in RankFilter class
@@ -155,5 +155,59 @@ public class SMPProjection {
         }
     }
 
+    public static void chooseSatisfiedPixels (short[] originalPixelArray,
+                                            short[] newPixelArray,
+                                            float[] lowerBoundArray,
+                                            float[] upperBoundArray,
+                                            int currentSlice) {
+        for (int i = 0; i < lowerBoundArray.length; i++) {
+            if (lowerBoundArray[i] <= currentSlice && upperBoundArray[i] >= currentSlice) {
+                newPixelArray[i] = originalPixelArray[i];
+            } else {
+                newPixelArray[i] = Short.MIN_VALUE;
+            }
+        }
+    }
+
+    public static ImageStack smpProjection (ImagePlus originalImage,
+                                            float[] optimalSmoothSheet,
+                                            int offSet){
+        ImageStack smpImageStack = ImageStack.create(originalImage.getWidth(),
+                originalImage.getHeight(),
+                originalImage.getNSlices(),
+                16);
+        ImageStack originalImageStack = originalImage.getStack();
+        int fuzziness = 1;
+        float[] lowerBound = new float[optimalSmoothSheet.length];
+        float[] upperBound = new float[optimalSmoothSheet.length];
+        for (int i = 0; i < optimalSmoothSheet.length; i++) {
+            lowerBound[i] = optimalSmoothSheet[i]-fuzziness+offSet;
+            upperBound[i] = optimalSmoothSheet[i]+fuzziness+offSet;
+        }
+        for (int currentSlice = 1; currentSlice <= originalImage.getNSlices(); currentSlice++) {
+            chooseSatisfiedPixels((short[])originalImageStack.getPixels(currentSlice),
+                    (short[])smpImageStack.getPixels(currentSlice),
+                    lowerBound,
+                    upperBound,
+                    currentSlice);
+        }
+        return smpImageStack;
+    }
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
