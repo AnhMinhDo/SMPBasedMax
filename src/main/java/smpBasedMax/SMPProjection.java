@@ -193,7 +193,6 @@ public class SMPProjection {
         }
         return smpImageStack;
     }
-
 }
 
 
