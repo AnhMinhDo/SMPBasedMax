@@ -100,7 +100,6 @@ class EnvelopeTest {
     }
 
 
-
     @Test
     public void testSortReturnPeakIndices() {
 
@@ -207,4 +206,5 @@ class EnvelopeTest {
         boolean[] result5 = Envelope.selectTroughByDistance(troughs5, priority5, distance5);
         assertArrayEquals(expected5, result5);
     }
+
 }
