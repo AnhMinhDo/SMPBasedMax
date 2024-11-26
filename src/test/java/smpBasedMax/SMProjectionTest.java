@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class SMPProjectionTest {
+class SMProjectionTest {
 
     @Test
     void testRoundUpRemoveOutliers() {
@@ -12,7 +12,7 @@ class SMPProjectionTest {
         float[] arr2 = new float[]{0.1f,4f,1f,0.1f,7f};
         float[] resultArray = new float[5];
         float[] expected = new float[]{1f,5f,7f,1f,7f};
-        SMPProjection.roundUpRemoveOutliers(arr1,arr2,resultArray, 7);
+        SMProjection.roundUpRemoveOutliers(arr1,arr2,resultArray, 7);
         assertArrayEquals(expected, resultArray);
     }
 }
