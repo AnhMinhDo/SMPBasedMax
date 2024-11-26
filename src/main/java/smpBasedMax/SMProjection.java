@@ -3,16 +3,16 @@ package smpBasedMax;
 
 import ij.ImagePlus;
 import ij.ImageStack;
+import ij.plugin.filter.RankFilters;
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
-import ij.plugin.filter.RankFilters;
 
 import java.util.Arrays;
 
 
-public class SMPProjection {
+public class SMProjection {
     private final ImagePlus MIPz_map;
-    private FloatProcessor SMPz_map;
+    private final ImagePlus originalImage;
     private final int numberOfRows;
     private final int numberOfColumns;
     private FloatProcessor envMax;
@@ -20,52 +20,50 @@ public class SMPProjection {
     private final int numberOfSlices;
     private int radius;
     private ZStackDirection zStackDirect;
+    private int offSet;
+    private MaxIntensityProjection projector;
 
-
-    public enum OutPutType {
-        SMP_IMAGE, SMPZ_MAP
-    }
 
     public enum ZStackDirection {
         OUT, IN
     }
 
-    public SMPProjection(ImagePlus MIPz_map, int distance, int numberOfSlices, int radius, ZStackDirection zStackDirection) {
+    public SMProjection(ImagePlus originalImage,
+                        ImagePlus MIPz_map,
+                        int distance,
+                        int radius,
+                        ZStackDirection zStackDirection,
+                        int offSet) {
+        this.originalImage = originalImage;
         this.MIPz_map = MIPz_map;
         this.numberOfRows = MIPz_map.getHeight();
         this.numberOfColumns = MIPz_map.getWidth();
         this.envMax = new FloatProcessor(numberOfColumns, numberOfRows);
         this.distance = distance;
-        this.numberOfSlices = numberOfSlices;
+        this.numberOfSlices = originalImage.getNSlices();
         this.radius = radius;
         this.zStackDirect = zStackDirection;
+        this.offSet = offSet;
     }
 
-    public ImagePlus getMIPz_map(String title) {
-        this.placeSmoothSheet();
-        int width = this.MIPz_map.getWidth();
-        int height = this.MIPz_map.getHeight();
-        float[] pixels = (float[])this.envMax.getPixels();
-        ImageProcessor oip;
-        // Create output image consistent w/ type of input image.
-        int size = pixels.length;
-        oip = this.MIPz_map.getProcessor().createProcessor(width,height);
-        short[] pixels16 = (short[])oip.getPixels();
-        for(int i=0; i<size; i++) {
-            pixels16[i] = (short) (pixels[i] + 0.5f);
-        }
-        // Adjust for display.
-        // Calling this on non-ByteProcessors ensures image
-        // processor is set up to correctly display image.
-        oip.resetMinAndMax();
-        return new ImagePlus(title, oip);
+    public ImagePlus doSMProjection() {
+        placeSmoothSheet();
+        float[] envMaxzValues = (float[])this.envMax.getPixels();
+        ImageStack imageStackAfterApplySmoothSheet = smpProjection(this.originalImage,envMaxzValues, this.offSet);
+        ImagePlus imageAfterApplySmoothSheet = new ImagePlus(this.originalImage.getTitle(), imageStackAfterApplySmoothSheet);
+        this.projector = new MaxIntensityProjection(imageAfterApplySmoothSheet);
+        return this.projector.doProjection();
+    }
+
+    public ImagePlus getSMPZmap(){
+        return projector.getZmap();
     }
 
     public void placeSmoothSheet () {
         // get the references to the float array of ImageProcessor Object
         float[] envMaxzValues = (float[])this.envMax.getPixels();
         // get a copy of original value Array of ImagePlus Object and transform to float[]
-        float[] MIPz_mapzValues = SMPProjection.getCopyAndTransformToFloatOfValuesArrayOfImagePlusObject(this.MIPz_map);
+        float[] MIPz_mapzValues = SMProjection.getCopyAndTransformToFloatOfValuesArrayOfImagePlusObject(this.MIPz_map);
         // Perform interpolation
         interpolateFloatArray(envMaxzValues,MIPz_mapzValues,
                 this.zStackDirect,
@@ -73,12 +71,36 @@ public class SMPProjection {
                 this.numberOfRows,
                 this.distance,
                 this.numberOfSlices);
-//        // Perform median filter
-//        RankFilters rf = new RankFilters();
-//        // Set the filter type to Median and the radius to radius, other parameter is set according to the default in RankFilter class
-//        rf.rank(this.envMax,this.radius,RankFilters.MEDIAN,0,50f,false,false);
+        // Perform median filter
+        RankFilters rf = new RankFilters();
+        // Set the filter type to Median and the radius to radius, other parameter is set according to the default in RankFilter class
+        rf.rank(this.envMax,this.radius,RankFilters.MEDIAN,0,50f,false,false);
     }
 
+    public static ImageStack smpProjection (ImagePlus originalImage,
+                                            float[] optimalSmoothSheet,
+                                            int offSet){
+        ImageStack smpImageStack = ImageStack.create(originalImage.getWidth(),
+                originalImage.getHeight(),
+                originalImage.getNSlices(),
+                16);
+        ImageStack originalImageStack = originalImage.getStack();
+        int fuzziness = 1;
+        float[] lowerBound = new float[optimalSmoothSheet.length];
+        float[] upperBound = new float[optimalSmoothSheet.length];
+        for (int i = 0; i < optimalSmoothSheet.length; i++) {
+            lowerBound[i] = optimalSmoothSheet[i]-fuzziness+offSet;
+            upperBound[i] = optimalSmoothSheet[i]+fuzziness+offSet;
+        }
+        for (int currentSlice = 1; currentSlice <= originalImage.getNSlices(); currentSlice++) {
+            chooseSatisfiedPixels((short[])originalImageStack.getPixels(currentSlice),
+                    (short[])smpImageStack.getPixels(currentSlice),
+                    lowerBound,
+                    upperBound,
+                    currentSlice);
+        }
+        return smpImageStack;
+    }
 
     public static float[] getCopyAndTransformToFloatOfValuesArrayOfImagePlusObject(ImagePlus imp){
         ImageProcessor impIP = imp.getProcessor();
@@ -164,35 +186,12 @@ public class SMPProjection {
             if (lowerBoundArray[i] <= currentSlice && upperBoundArray[i] >= currentSlice) {
                 newPixelArray[i] = originalPixelArray[i];
             } else {
-                newPixelArray[i] = Short.MIN_VALUE;
+                newPixelArray[i] = 0;
             }
         }
     }
 
-    public static ImageStack smpProjection (ImagePlus originalImage,
-                                            float[] optimalSmoothSheet,
-                                            int offSet){
-        ImageStack smpImageStack = ImageStack.create(originalImage.getWidth(),
-                originalImage.getHeight(),
-                originalImage.getNSlices(),
-                16);
-        ImageStack originalImageStack = originalImage.getStack();
-        int fuzziness = 1;
-        float[] lowerBound = new float[optimalSmoothSheet.length];
-        float[] upperBound = new float[optimalSmoothSheet.length];
-        for (int i = 0; i < optimalSmoothSheet.length; i++) {
-            lowerBound[i] = optimalSmoothSheet[i]-fuzziness+offSet;
-            upperBound[i] = optimalSmoothSheet[i]+fuzziness+offSet;
-        }
-        for (int currentSlice = 1; currentSlice <= originalImage.getNSlices(); currentSlice++) {
-            chooseSatisfiedPixels((short[])originalImageStack.getPixels(currentSlice),
-                    (short[])smpImageStack.getPixels(currentSlice),
-                    lowerBound,
-                    upperBound,
-                    currentSlice);
-        }
-        return smpImageStack;
-    }
+
 }
 
 
