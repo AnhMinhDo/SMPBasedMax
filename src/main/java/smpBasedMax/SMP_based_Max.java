@@ -12,7 +12,6 @@ import java.io.IOException;
 import java.util.Arrays;
 
 
-
 public class SMP_based_Max implements PlugIn {
     @Override
     public void run(String arg) {
@@ -31,12 +30,18 @@ public class SMP_based_Max implements PlugIn {
         processOptions.showDialog();
 
         // Retrieve parameter values from dialog
-        String zStackDirection = processOptions.getNextString();
-        double stiffness = processOptions.getNextNumber();
-        double filterSize = processOptions.getNextNumber();
+        String zStackDirectionString = processOptions.getNextString();
+        SMProjection.ZStackDirection zStackDirection;
+        if (zStackDirectionString.equalsIgnoreCase("OUT")) {
+           zStackDirection  = SMProjection.ZStackDirection.OUT;
+        } else {
+            zStackDirection = SMProjection.ZStackDirection.IN;
+        }
+        int stiffness = (int) processOptions.getNextNumber();
+        int filterSize = (int) processOptions.getNextNumber();
         int additionalStacks = (int) processOptions.getNextNumber();
-        double offset = processOptions.getNextNumber();
-        double depth =  processOptions.getNextNumber();
+        int offset = (int) processOptions.getNextNumber();
+        int depth =  (int) processOptions.getNextNumber();
 
         // If users choose Single File
         String[] validFilePath = new String[0];
@@ -87,17 +92,28 @@ public class SMP_based_Max implements PlugIn {
             MaxIntensityProjection projector = new MaxIntensityProjection(inputImage);
             ImagePlus projectedImage = projector.doProjection();
             ImagePlus zMap = projector.getZmap();
-            if(chooser[0] == 1) projectedImage.show();
+            SMProjection smProjector = new SMProjection(inputImage,zMap,stiffness,filterSize,zStackDirection,offset);
+            ImagePlus projectedSMPImage = smProjector.doSMProjection();
+            ImagePlus smpZmap = smProjector.getSMPZmap();
+            //if(chooser[0] == 1) projectedImage.show();
             // Save files to output directory
             try {
                 String resultDir = SmpBasedMaxUtil.createResultDir(filepath);
                 String fileName = SmpBasedMaxUtil.extractFilename(filepath);
+                // Save MIP projected Image and zMap
                 FileSaver projectedImageTiff = new FileSaver(projectedImage);
                 FileSaver zMapTiff = new FileSaver(zMap);
                 projectedImageTiff.saveAsTiff(resultDir + File.separator +
                                                     fileName + "_MIP" + ".tif");
                 zMapTiff.saveAsTiff(resultDir + File.separator +
                         fileName + "_MIP_zmap" + ".tif");
+                // Save SMP projected image and zMap
+                FileSaver projectedSMPImageTiff = new FileSaver(projectedSMPImage);
+                FileSaver smpZmapTiff = new FileSaver(smpZmap);
+                projectedSMPImageTiff.saveAsTiff(resultDir + File.separator +
+                        fileName + "_SMP" + ".tif");
+                smpZmapTiff.saveAsTiff(resultDir + File.separator +
+                        fileName + "_SMP_zmap" + ".tif");
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
