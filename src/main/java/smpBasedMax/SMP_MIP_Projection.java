@@ -5,12 +5,12 @@ import ij.ImageStack;
 
 
 public class SMP_MIP_Projection {
-    private  ImagePlus SMPz_map;
-    private ImagePlus OriginalImage;
-    private  int numberOfRows;
-    private  int numberOfColumns;
+    private  final ImagePlus SMPz_map;
+    private final ImagePlus OriginalImage;
+    private  final int numberOfRows;
+    private  final int numberOfColumns;
     private  int numberOfSlices;
-    private SMP_MIP_Projection.ZStackDirection zStackDirect;
+    private final SMP_MIP_Projection.ZStackDirection zStackDirect;
     private int depth;
     private int[] max_z;
     private int[] min_z;

@@ -112,7 +112,6 @@ public class SMProjection {
         return impValuesFloat;
     }
 
-
     public static void interpolateFloatArray(float[] referenceToFloatArrayContainImageValues,
                                           float[] copyOfOriginalArrayValue,
                                           ZStackDirection zStackDirection,
@@ -166,7 +165,10 @@ public class SMProjection {
             }
         }
 
-    public static void roundUpRemoveOutliers (float[] floatArray1, float[] floatArray2, float[] referenceToResultArray, int numberOfSlices) {
+    public static void roundUpRemoveOutliers (float[] floatArray1,
+                                              float[] floatArray2,
+                                              float[] referenceToResultArray,
+                                              int numberOfSlices) {
         for (int i = 0; i < floatArray1.length; i++) {
             referenceToResultArray[i] = Math.round(Math.max(floatArray1[i], floatArray2[i]));
             if (referenceToResultArray[i] > numberOfSlices) {

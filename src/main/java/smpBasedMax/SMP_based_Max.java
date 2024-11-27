@@ -98,6 +98,7 @@ public class SMP_based_Max implements PlugIn {
             //if(chooser[0] == 1) projectedImage.show();
             // Save files to output directory
             try {
+                // prepare the directory for output
                 String resultDir = SmpBasedMaxUtil.createResultDir(filepath);
                 String fileName = SmpBasedMaxUtil.extractFilename(filepath);
                 // Save MIP projected Image and zMap
