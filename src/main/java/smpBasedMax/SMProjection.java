@@ -3,6 +3,7 @@ package smpBasedMax;
 
 import ij.ImagePlus;
 import ij.ImageStack;
+import ij.io.FileSaver;
 import ij.plugin.filter.RankFilters;
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
