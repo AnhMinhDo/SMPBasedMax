@@ -67,7 +67,6 @@ public class Envelope {
      * @param numberOfDataPoints Number of elements in the original signal array
      * @return new signal array that has been smoothed based on the given peaks
      */
-
     public static float[] splineInterpolate(int[] x, float[] y, int numberOfDataPoints){
         // Convert int[] to double[] and float[] to double[]
         double[] xDouble = new double[x.length];
