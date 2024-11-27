@@ -3,7 +3,6 @@ package smpBasedMax;
 import org.apache.commons.math3.analysis.interpolation.LinearInterpolator;
 import org.apache.commons.math3.analysis.interpolation.SplineInterpolator;
 import org.apache.commons.math3.analysis.polynomials.PolynomialFunction;
-import org.apache.commons.math3.analysis.interpolation.HermiteInterpolator;
 import org.apache.commons.math3.analysis.polynomials.PolynomialSplineFunction;
 
 
@@ -25,64 +24,49 @@ public class Envelope {
     }
 
     /**
-     * perform Polynomial Interpolation base on the peaks of the signal
+     * perform linear Interpolation base on the peaks of the signal
+     * parts that cannot be interpolated are extrapolated using linear extrapolation
      * @param x integer array of peak indices in the original signal array
      * @param y float array of peak values
      * @param numberOfDataPoints Number of elements in the original signal array
      * @return new signal array that has been smoothed based on the given peaks
      */
-//    public static float[] splineInterpolate(int[] x, float[] y, int numberOfDataPoints){
-//        // Convert int[] to double[] and float[] to double[]
-//        double[] xDouble = new double[x.length];
-//        double[] yDouble = new double[y.length];
-//        for (int i = 0; i < x.length; i++) {
-//            xDouble[i] = (double) x[i];
-//            yDouble[i] = (double) y[i];
-//        }
-//        // Create the SplineInterpolator
-//        HermiteInterpolator interpolator = new HermiteInterpolator();
-//        for (int i = 0; i < xDouble.length; i++) {
-//            interpolator.addSamplePoint(xDouble[i],new double[]{yDouble[i]});
-//        }
-//        // get the polynomial function
-//        PolynomialFunction[] polynomials = interpolator.getPolynomials();
-//        PolynomialFunction polynomial = polynomials[0];
-//
-//        // Compute the value for all the dataPoints
-//        double[] xFinalDouble = new double[numberOfDataPoints];
-//        for (int i = 0; i < numberOfDataPoints; i++) {
-//            xFinalDouble[i] = polynomial.value(i);
-//        }
-//        return ConvertUtil.convertToPrimitiveFloat(xFinalDouble);
-//    }
+    public static float[] linearInterpolate(int[] x, float[] y, int numberOfDataPoints){
+        // Convert int[] to double[] and float[] to double[]
+        double[] xDouble = new double[x.length];
+        double[] yDouble = new double[y.length];
+        for (int i = 0; i < x.length; i++) {
+            xDouble[i] = (double) x[i];
+            yDouble[i] = (double) y[i];
+        }
+        // Create the SplineInterpolator
+        LinearInterpolator interpolator = new LinearInterpolator();
+        PolynomialSplineFunction function = interpolator.interpolate(xDouble, yDouble);
 
-//    public static float[] splineInterpolate(int[] x, float[] y, int numberOfDataPoints){
-//        // Convert int[] to double[] and float[] to double[]
-//        double[] xDouble = new double[x.length];
-//        double[] yDouble = new double[y.length];
-//        for (int i = 0; i < x.length; i++) {
-//            xDouble[i] = (double) x[i];
-//            yDouble[i] = (double) y[i];
-//        }
-//        // Create the SplineInterpolator
-//        LinearInterpolator interpolator = new LinearInterpolator();
-//        PolynomialSplineFunction function = interpolator.interpolate(xDouble, yDouble);
-//
-//        // Compute the value for all the dataPoints
-//        double[] xFinalDouble = new double[numberOfDataPoints];
-//        double leftSlope = (yDouble[1] - yDouble[0]) / (xDouble[1] - xDouble[0]);
-//        double rightSlope = (yDouble[yDouble.length - 1] - yDouble[yDouble.length - 2]) / (xDouble[xDouble.length - 1] - xDouble[xDouble.length - 2]);
-//        for (int i = 0; i < numberOfDataPoints; i++) {
-//            if(i < xDouble[0]){
-//                xFinalDouble[i] = yDouble[0] + leftSlope*(xDouble[0]-i);
-//            } else if (i > xDouble[xDouble.length-1]) {
-//                xFinalDouble[i] = yDouble[yDouble.length-1] + rightSlope*(i-xDouble[xDouble.length-1]);
-//            } else {
-//                xFinalDouble[i] = function.value(i);
-//            }
-//        }
-//        return ConvertUtil.convertToPrimitiveFloat(xFinalDouble);
-//    }
+        // Compute the value for all the dataPoints
+        double[] xFinalDouble = new double[numberOfDataPoints];
+        double leftSlope = (yDouble[1] - yDouble[0]) / (xDouble[1] - xDouble[0]);
+        double rightSlope = (yDouble[yDouble.length - 1] - yDouble[yDouble.length - 2]) / (xDouble[xDouble.length - 1] - xDouble[xDouble.length - 2]);
+        for (int i = 0; i < numberOfDataPoints; i++) {
+            if(i < xDouble[0]){
+                xFinalDouble[i] = yDouble[0] + leftSlope*(xDouble[0]-i);
+            } else if (i > xDouble[xDouble.length-1]) {
+                xFinalDouble[i] = yDouble[yDouble.length-1] + rightSlope*(i-xDouble[xDouble.length-1]);
+            } else {
+                xFinalDouble[i] = function.value(i);
+            }
+        }
+        return ConvertUtil.convertToPrimitiveFloat(xFinalDouble);
+    }
+
+    /**
+     * perform cubic spline Interpolation base on the peaks of the signal
+     * parts that cannot be interpolated are extrapolated using linear extrapolation
+     * @param x integer array of peak indices in the original signal array
+     * @param y float array of peak values
+     * @param numberOfDataPoints Number of elements in the original signal array
+     * @return new signal array that has been smoothed based on the given peaks
+     */
 
     public static float[] splineInterpolate(int[] x, float[] y, int numberOfDataPoints){
         // Convert int[] to double[] and float[] to double[]
