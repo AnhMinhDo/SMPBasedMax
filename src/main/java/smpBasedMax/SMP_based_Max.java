@@ -22,10 +22,10 @@ public class SMP_based_Max implements PlugIn {
         processOptions.addButton("Single File", (event) -> chooser[0] = 1);
         processOptions.addButton("Multiple Files", (event) -> chooser[0] = 2);
         processOptions.addStringField("Direction of z-stack (IN or OUT): ","IN", 10);
-        processOptions.addNumericField("Enter envelope stiffness [pixels]:  ",0, 0);
-        processOptions.addNumericField("Enter final filter size [pixels]: ", 0, 0);
+        processOptions.addNumericField("Enter envelope stiffness [pixels]:  ",30, 0);
+        processOptions.addNumericField("Enter final filter size [pixels]: ", 30, 0);
         processOptions.addNumericField("Enter number of ADDITIONAL stacks to be z-smoothed [e.g. 0, 1, 2]",0,0);
-        processOptions.addNumericField("Offset: N planes above (+) or below (-) blanket [pixels]:  ", 0, 0);
+        processOptions.addNumericField("Offset: N planes above (+) or below (-) blanket [pixels]:  ", 2, 0);
         processOptions.addNumericField("Depth: MIP for N pixels into blanket [pixels]:  ", 0, 0);
         processOptions.showDialog();
 
