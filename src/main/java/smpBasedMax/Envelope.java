@@ -14,13 +14,13 @@ public class Envelope {
     public static float[] yUpper1D (float[] signal, int distance){
         int[] peakIdx = findPeak(signal, distance);
         float[] peakValues = ConvertUtil.extractElementsByIndices(signal, peakIdx);
-        return splineInterpolate(peakIdx,peakValues,signal.length);
+        return linearInterpolate(peakIdx,peakValues,signal.length);
     }
 
     public static float[] yLower1D (float[] signal, int distance){
         int[] troughIdx = findTrough(signal, distance);
         float[] troughValues = ConvertUtil.extractElementsByIndices(signal, troughIdx);
-        return splineInterpolate(troughIdx,troughValues,signal.length);
+        return linearInterpolate(troughIdx,troughValues,signal.length);
     }
 
     /**
