@@ -24,7 +24,6 @@ public class SMP_based_Max implements PlugIn {
         processOptions.addStringField("Direction of z-stack (IN or OUT): ","IN", 10);
         processOptions.addNumericField("Enter envelope stiffness [pixels]:  ",30, 0);
         processOptions.addNumericField("Enter final filter size [pixels]: ", 30, 0);
-        processOptions.addNumericField("Enter number of ADDITIONAL stacks to be z-smoothed [e.g. 0, 1, 2]",0,0);
         processOptions.addNumericField("Offset: N planes above (+) or below (-) blanket [pixels]:  ", 2, 0);
         processOptions.addNumericField("Depth: MIP for N pixels into blanket [pixels]:  ", 0, 0);
         processOptions.showDialog();
@@ -39,7 +38,6 @@ public class SMP_based_Max implements PlugIn {
         }
         int stiffness = (int) processOptions.getNextNumber();
         int filterSize = (int) processOptions.getNextNumber();
-        int additionalStacks = (int) processOptions.getNextNumber();
         int offset = (int) processOptions.getNextNumber();
         int depth =  (int) processOptions.getNextNumber();
 
@@ -47,16 +45,7 @@ public class SMP_based_Max implements PlugIn {
         String[] validFilePath = new String[0];
         if (chooser[0] == 1) {
             validFilePath = SmpBasedMaxUtil.handleSingleFile();
-            if (validFilePath != null) {
-                IJ.showMessage("Selected Parameters and File Path: ",
-                            "Selected file: " + validFilePath[0] + "\n" +
-                                "Direction of z-stack: " + zStackDirection + "\n" +
-                                "Envelope Stiffness: " + stiffness + "\n" +
-                                "Final Filter Size: " + filterSize + "\n" +
-                                "Additional Stacks: " + additionalStacks + "\n" +
-                                "Offset: " + offset + "\n" +
-                                "Depth: " + depth);
-            } else {
+            if (validFilePath == null) {
                 IJ.showMessage("No file selected for Single File option.");
             }
         }
@@ -73,7 +62,6 @@ public class SMP_based_Max implements PlugIn {
                                 "Direction of z-stack: " + zStackDirection + "\n" +
                                 "Envelope Stiffness: " + stiffness + "\n" +
                                 "Final Filter Size: " + filterSize + "\n" +
-                                "Additional Stacks: " + additionalStacks + "\n" +
                                 "Offset: " + offset + "\n" +
                                 "Depth: " + depth);
             } else {
