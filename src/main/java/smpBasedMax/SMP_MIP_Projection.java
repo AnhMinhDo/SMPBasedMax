@@ -101,7 +101,7 @@ public class SMP_MIP_Projection {
                 if (currentSlice >= min_z[i] && currentSlice <= max_z[i]){
                     newPixelArray[i] = originalPixelArray[i];
                 } else {
-                    newPixelArray[i] = Short.MIN_VALUE;
+                    newPixelArray[i] = 0;
                 }
             }
         } else {
@@ -109,7 +109,7 @@ public class SMP_MIP_Projection {
                 if (currentSlice >= max_z[i] && currentSlice <= min_z[i]){
                     newPixelArray[i] = originalPixelArray[i];
                 } else {
-                    newPixelArray[i] = Short.MIN_VALUE;
+                    newPixelArray[i] = 0;
                 }
             }
         }
