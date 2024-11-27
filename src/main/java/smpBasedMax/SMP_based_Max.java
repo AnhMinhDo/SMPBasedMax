@@ -15,7 +15,7 @@ import java.util.Arrays;
 public class SMP_based_Max implements PlugIn {
     @Override
     public void run(String arg) {
-        final int[] chooser = new int[1];
+        final int[] chooser = new int[]{1};
         // dialog with button to choose Single file or Multiple file
         GenericDialog processOptions = new GenericDialog("File Selection");
         processOptions.addMessage("Choose an option:");
