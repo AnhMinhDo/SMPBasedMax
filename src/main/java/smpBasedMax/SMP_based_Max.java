@@ -99,7 +99,11 @@ public class SMP_based_Max implements PlugIn {
             // Save files to output directory
             try {
                 // prepare the directory for output
-                String resultDir = SmpBasedMaxUtil.createResultDir(filepath);
+                String resultDir = SmpBasedMaxUtil.createResultDir(filepath,
+                                                                stiffness,
+                                                                filterSize,
+                                                                offset,
+                                                                depth);
                 String fileName = SmpBasedMaxUtil.extractFilename(filepath);
                 // Save MIP projected Image and zMap
                 FileSaver projectedImageTiff = new FileSaver(projectedImage);
@@ -112,9 +116,9 @@ public class SMP_based_Max implements PlugIn {
                 FileSaver projectedSMPImageTiff = new FileSaver(projectedSMPImage);
                 FileSaver smpZmapTiff = new FileSaver(smpZmap);
                 projectedSMPImageTiff.saveAsTiff(resultDir + File.separator +
-                        fileName + "_SMP" + ".tif");
+                        fileName + "_SMP" + "_stiffness"+stiffness+"_filterSize"+filterSize+"_offSet"+offset + ".tif");
                 smpZmapTiff.saveAsTiff(resultDir + File.separator +
-                        fileName + "_SMP_zmap" + ".tif");
+                        fileName + "_SMP_zmap" + "_stiffness"+stiffness+"_filterSize"+filterSize+"_offSet"+offset + ".tif");
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
