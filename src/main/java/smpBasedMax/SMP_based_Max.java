@@ -27,6 +27,7 @@ public class SMP_based_Max implements PlugIn {
         processOptions.addNumericField("Offset: N planes above (+) or below (-) blanket [pixels]:  ", 2, 0);
         processOptions.addNumericField("Depth: MIP for N pixels into blanket [pixels]:  ", 0, 0);
         processOptions.showDialog();
+        if (processOptions.wasCanceled()) return;
 
         // Retrieve parameter values from dialog
         String zStackDirectionString = processOptions.getNextString();
