@@ -80,14 +80,21 @@ public class SmpBasedMaxUtil {
 
     // Create the result directory at same dir of the image stack
     public static String createResultDir (String filePath,
+                                          ZStackDirection zStackDirection,
                                           int stiffness,
                                           int filterSize,
                                           int offset,
                                           int depth) throws IOException {
+        String direction;
+        if (zStackDirection == ZStackDirection.IN){
+            direction  = "IN_";
+        } else {
+            direction = "OUT_";
+        }
         File file = new File(filePath);
         String fileName = extractFilename(filePath);
         String fileParentDir = file.getParent();
-        Path resultDir = Paths.get(fileParentDir + File.separator + "OUT_" + fileName+"_stiffness"+stiffness+"_filterSize"+filterSize+"_offSet"+offset+"_depth"+depth);
+        Path resultDir = Paths.get(fileParentDir + File.separator + direction + fileName+"_stiffness"+stiffness+"_filterSize"+filterSize+"_offSet"+offset+"_depth"+depth);
         Files.createDirectory(resultDir);
         return resultDir.toString();
     }
