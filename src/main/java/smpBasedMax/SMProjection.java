@@ -24,10 +24,6 @@ public class SMProjection {
     private MaxIntensityProjection projector;
 
 
-    public enum ZStackDirection {
-        OUT, IN
-    }
-
     public SMProjection(ImagePlus originalImage,
                         ImagePlus MIPz_map,
                         int distance,

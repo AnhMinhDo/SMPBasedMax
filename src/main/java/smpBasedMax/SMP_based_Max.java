@@ -7,6 +7,7 @@ import ij.plugin.PlugIn;
 import ij.process.StackConverter;
 import ij.io.FileSaver;
 
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
@@ -30,11 +31,11 @@ public class SMP_based_Max implements PlugIn {
 
         // Retrieve parameter values from dialog
         String zStackDirectionString = processOptions.getNextString();
-        SMProjection.ZStackDirection zStackDirection;
+        ZStackDirection zStackDirection;
         if (zStackDirectionString.equalsIgnoreCase("OUT")) {
-           zStackDirection  = SMProjection.ZStackDirection.OUT;
+           zStackDirection  = ZStackDirection.OUT;
         } else {
-            zStackDirection = SMProjection.ZStackDirection.IN;
+            zStackDirection = ZStackDirection.IN;
         }
         int stiffness = (int) processOptions.getNextNumber();
         int filterSize = (int) processOptions.getNextNumber();
@@ -76,14 +77,18 @@ public class SMP_based_Max implements PlugIn {
             // convert to 16 bit gray scale
             StackConverter stackConverter = new StackConverter(inputImage);
             stackConverter.convertToGray16();
-            // ZProjecting the current image and show it in a new window
+            // ZProjecting MIP
             MaxIntensityProjection projector = new MaxIntensityProjection(inputImage);
             ImagePlus projectedImage = projector.doProjection();
             ImagePlus zMap = projector.getZmap();
+            // ZProjecting SMP
             SMProjection smProjector = new SMProjection(inputImage,zMap,stiffness,filterSize,zStackDirection,offset);
             ImagePlus projectedSMPImage = smProjector.doSMProjection();
             ImagePlus smpZmap = smProjector.getSMPZmap();
-            //if(chooser[0] == 1) projectedImage.show();
+            // SMP-MIP if depth !=0
+            SMP_MIP_Projection smpMipProjector = new SMP_MIP_Projection(inputImage,smpZmap,depth,zStackDirection);
+            ImagePlus projectedSMPMIPImage = smpMipProjector.doProjection();
+            ImagePlus smpMipZmap = smpMipProjector.getZmap();
             // Save files to output directory
             try {
                 // prepare the directory for output
@@ -107,6 +112,14 @@ public class SMP_based_Max implements PlugIn {
                         fileName + "_SMP" + "_stiffness"+stiffness+"_filterSize"+filterSize+"_offSet"+offset + ".tif");
                 smpZmapTiff.saveAsTiff(resultDir + File.separator +
                         fileName + "_SMP_zmap" + "_stiffness"+stiffness+"_filterSize"+filterSize+"_offSet"+offset + ".tif");
+                // Save SMP-MIP projected image and zMap
+                FileSaver projectedSMPMIPImageTiff = new FileSaver(projectedSMPMIPImage);
+                FileSaver smpMipZmapTiff = new FileSaver(smpMipZmap);
+                projectedSMPMIPImageTiff.saveAsTiff(resultDir + File.separator +
+                        fileName + "_SMPbasedMIP" + "_stiffness"+stiffness+"_filterSize"+filterSize+"_offSet"+offset + "_depth"+depth+".tif");
+                smpMipZmapTiff.saveAsTiff(resultDir + File.separator +
+                        fileName + "_SMPbasedMIP_zmap" + "_stiffness"+stiffness+"_filterSize"+filterSize+"_offSet"+offset + "_depth"+depth + ".tif");
+
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

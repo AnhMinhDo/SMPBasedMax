@@ -9,8 +9,8 @@ public class SMP_MIP_Projection {
     private final ImagePlus originalImage;
     private  final int numberOfRows;
     private  final int numberOfColumns;
-    private  int numberOfSlices;
-    private final SMP_MIP_Projection.ZStackDirection zStackDirect;
+    private  final int numberOfSlices;
+    private final ZStackDirection zStackDirect;
     private int depth;
     private int[] max_z;
     private int[] min_z;
@@ -20,14 +20,10 @@ public class SMP_MIP_Projection {
         SMP_IMAGE, SMPZ_MAP
     }
 
-    public enum ZStackDirection {
-        OUT, IN
-    }
-
     public SMP_MIP_Projection(ImagePlus OriginalImage,
                               ImagePlus SMPz_map,
                               int Depth,
-                              SMP_MIP_Projection.ZStackDirection zStackDirection){
+                              ZStackDirection zStackDirection){
         this.originalImage = OriginalImage;
         this.SMPz_map = SMPz_map;
         this.zStackDirect = zStackDirection;
@@ -60,7 +56,7 @@ public class SMP_MIP_Projection {
     public static ImageStack smp_mipProjection(ImagePlus originalImage,
                                                ImagePlus SMPz_map,
                                                int Depth,
-                                               SMP_MIP_Projection.ZStackDirection zStackDirection,
+                                               ZStackDirection zStackDirection,
                                                int[] max_z,
                                                int[] min_z,
                                                int numberOfSlices){
@@ -80,7 +76,7 @@ public class SMP_MIP_Projection {
 
     public static void setMinMaxZmap(ImagePlus SMPz_map,
                                      int Depth,
-                                     SMP_MIP_Projection.ZStackDirection zStackDirection,
+                                     ZStackDirection zStackDirection,
                                      int[] max_z,
                                      int[] min_z,
                                      int numberOfSlices){
