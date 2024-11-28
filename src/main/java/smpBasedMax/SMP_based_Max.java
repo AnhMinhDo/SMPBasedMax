@@ -7,7 +7,6 @@ import ij.plugin.PlugIn;
 import ij.process.StackConverter;
 import ij.io.FileSaver;
 
-import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
