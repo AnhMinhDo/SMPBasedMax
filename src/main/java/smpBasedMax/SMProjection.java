@@ -18,8 +18,8 @@ public class SMProjection {
     private FloatProcessor envMax;
     private final int distance;
     private final int numberOfSlices;
-    private int radius;
-    private ZStackDirection zStackDirect;
+    private final int radius;
+    private final ZStackDirection zStackDirect;
     private int offSet;
     private MaxIntensityProjection projector;
 
@@ -93,7 +93,7 @@ public class SMProjection {
             upperBound[i] = optimalSmoothSheet[i]+fuzziness+offSet;
         }
         for (int currentSlice = 1; currentSlice <= originalImage.getNSlices(); currentSlice++) {
-            chooseSatisfiedPixels((short[])originalImageStack.getPixels(currentSlice),
+            chooseQualifiedPixels((short[])originalImageStack.getPixels(currentSlice),
                     (short[])smpImageStack.getPixels(currentSlice),
                     lowerBound,
                     upperBound,
@@ -179,11 +179,11 @@ public class SMProjection {
         }
     }
 
-    public static void chooseSatisfiedPixels (short[] originalPixelArray,
-                                            short[] newPixelArray,
-                                            float[] lowerBoundArray,
-                                            float[] upperBoundArray,
-                                            int currentSlice) {
+    public static void chooseQualifiedPixels(short[] originalPixelArray,
+                                             short[] newPixelArray,
+                                             float[] lowerBoundArray,
+                                             float[] upperBoundArray,
+                                             int currentSlice) {
         for (int i = 0; i < lowerBoundArray.length; i++) {
             if (lowerBoundArray[i] <= currentSlice && upperBoundArray[i] >= currentSlice) {
                 newPixelArray[i] = originalPixelArray[i];
