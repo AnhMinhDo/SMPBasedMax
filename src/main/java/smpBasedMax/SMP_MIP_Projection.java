@@ -6,7 +6,7 @@ import ij.ImageStack;
 
 public class SMP_MIP_Projection {
     private  final ImagePlus SMPz_map;
-    private final ImagePlus OriginalImage;
+    private final ImagePlus originalImage;
     private  final int numberOfRows;
     private  final int numberOfColumns;
     private  int numberOfSlices;
@@ -14,6 +14,7 @@ public class SMP_MIP_Projection {
     private int depth;
     private int[] max_z;
     private int[] min_z;
+    private MaxIntensityProjection projector;
 
     public enum OutPutType {
         SMP_IMAGE, SMPZ_MAP
@@ -27,7 +28,7 @@ public class SMP_MIP_Projection {
                               ImagePlus SMPz_map,
                               int Depth,
                               SMP_MIP_Projection.ZStackDirection zStackDirection){
-        this.OriginalImage = OriginalImage;
+        this.originalImage = OriginalImage;
         this.SMPz_map = SMPz_map;
         this.zStackDirect = zStackDirection;
         this.numberOfRows = OriginalImage.getHeight();
@@ -36,6 +37,24 @@ public class SMP_MIP_Projection {
         this.depth = Depth;
         this.max_z = new int[numberOfRows*numberOfColumns];
         this.min_z = new int[numberOfRows*numberOfColumns];
+    }
+
+    public ImagePlus doProjection(){
+
+        ImageStack imageStackAfterAdjustDepth = smp_mipProjection(this.originalImage,
+                                                                this.SMPz_map,
+                                                                this.depth,
+                                                                this.zStackDirect,
+                                                                this.max_z,
+                                                                this.min_z,
+                                                                this.numberOfSlices);
+        ImagePlus imageAfterAdjustDepth = new ImagePlus(this.originalImage.getTitle(), imageStackAfterAdjustDepth);
+        this.projector = new MaxIntensityProjection(imageAfterAdjustDepth);
+        return this.projector.doProjection();
+    }
+
+    public ImagePlus getZmap(){
+        return this.projector.getZmap();
     }
 
     public static ImageStack smp_mipProjection(ImagePlus originalImage,
@@ -52,7 +71,7 @@ public class SMP_MIP_Projection {
         ImageStack originalImageStack = originalImage.getStack();
         setMinMaxZmap(SMPz_map, Depth, zStackDirection, max_z, min_z, numberOfSlices);
         for (int currentSlice = 1; currentSlice <= originalImage.getNSlices(); currentSlice++) {
-            chooseSatisfiedPixels((short[])originalImageStack.getPixels(currentSlice),
+            chooseQualifiedPixels((short[])originalImageStack.getPixels(currentSlice),
                     (short[])smp_mipImageStack.getPixels(currentSlice),
                     max_z, min_z,zStackDirection, Depth, currentSlice);
         }
@@ -89,13 +108,13 @@ public class SMP_MIP_Projection {
         }
     }
 
-    public static void chooseSatisfiedPixels (short[] originalPixelArray,
-                                              short[] newPixelArray,
-                                              int[] max_z,
-                                              int[] min_z,
-                                              ZStackDirection zStackDirection,
-                                              int Depth,
-                                              int currentSlice) {
+    public static void chooseQualifiedPixels(short[] originalPixelArray,
+                                             short[] newPixelArray,
+                                             int[] max_z,
+                                             int[] min_z,
+                                             ZStackDirection zStackDirection,
+                                             int Depth,
+                                             int currentSlice) {
         if (Depth >= 0){
             for (int i = 0; i < originalPixelArray.length; i++) {
                 if (currentSlice >= min_z[i] && currentSlice <= max_z[i]){
