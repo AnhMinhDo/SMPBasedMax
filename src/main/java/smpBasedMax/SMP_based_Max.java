@@ -18,6 +18,7 @@ public class SMP_based_Max implements PlugIn {
     public void run(String arg) {
         while(true) {
             final int[] chooser = new int[]{1};
+            String currentDir = IJ.getDirectory("file");
             // dialog with button to choose Single file or Multiple file
             GenericDialog processOptions = new NonBlockingGenericDialog("SMP based Max");
             processOptions.addMessage("Choose an option:");
@@ -28,6 +29,7 @@ public class SMP_based_Max implements PlugIn {
             processOptions.addNumericField("Enter final filter size [pixels]: ", 30, 0);
             processOptions.addNumericField("Offset: N planes above (+) or below (-) blanket [pixels]:  ", 2, 0);
             processOptions.addNumericField("Depth: MIP for N pixels into blanket [pixels]:  ", 0, 0);
+            processOptions.addDirectoryField("image source", currentDir,30);
             processOptions.showDialog();
             if (processOptions.wasCanceled()) return;
 
@@ -61,13 +63,13 @@ public class SMP_based_Max implements PlugIn {
                     for (int i = 0; i < validFilePath.length; i++) {
                         fileNames[i] = SmpBasedMaxUtil.extractFilename(validFilePath[i]);
                     }
-                    IJ.showMessage("Selected Parameters and File names",
-                            "Selected file: " + Arrays.toString(fileNames) + "\n" +
-                                    "Direction of z-stack: " + zStackDirection + "\n" +
-                                    "Envelope Stiffness: " + stiffness + "\n" +
-                                    "Final Filter Size: " + filterSize + "\n" +
-                                    "Offset: " + offset + "\n" +
-                                    "Depth: " + depth);
+//                    IJ.showMessage("Selected Parameters and File names",
+//                            "Selected file: " + Arrays.toString(fileNames) + "\n" +
+//                                    "Direction of z-stack: " + zStackDirection + "\n" +
+//                                    "Envelope Stiffness: " + stiffness + "\n" +
+//                                    "Final Filter Size: " + filterSize + "\n" +
+//                                    "Offset: " + offset + "\n" +
+//                                    "Depth: " + depth);
                 } else {
                     IJ.showMessage("No file selected for multiple-files Option.");
                     return;
