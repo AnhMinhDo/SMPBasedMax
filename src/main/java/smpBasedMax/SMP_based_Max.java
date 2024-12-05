@@ -2,7 +2,6 @@ package smpBasedMax;
 
 import ij.IJ;
 import ij.ImagePlus;
-import ij.gui.GenericDialog;
 import ij.gui.NonBlockingGenericDialog;
 import ij.plugin.PlugIn;
 import ij.process.StackConverter;
@@ -10,7 +9,6 @@ import ij.io.FileSaver;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.stream.Stream;
 
 
@@ -23,7 +21,7 @@ public class SMP_based_Max implements PlugIn {
             String currentFile = IJ.getDirectory("image");
             String[] modes = Stream.of(ProcessingMode.values()).map(Enum::name).toArray(String[]::new);
             // dialog with button to choose Single file or Multiple file
-            GenericDialog processOptions = new NonBlockingGenericDialog("SMP based Max");
+            NonBlockingGenericDialog processOptions = new NonBlockingGenericDialog("SMP based Max");
             processOptions.addRadioButtonGroup("Process Mode: ",modes,1,2,modes[0]);
             processOptions.addEnumChoice("Direction of z-stack", ZStackDirection.values(),ZStackDirection.IN);
             processOptions.addNumericField("Enter envelope stiffness [pixels]:  ", 30, 0);

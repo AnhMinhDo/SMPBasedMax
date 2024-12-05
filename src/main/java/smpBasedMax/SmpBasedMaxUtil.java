@@ -10,9 +10,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.Path;
 
-import ij.io.OpenDialog;
-import ij.io.DirectoryChooser;
-
 
 
 public class SmpBasedMaxUtil {
