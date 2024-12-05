@@ -17,9 +17,7 @@ import ij.io.DirectoryChooser;
 
 public class SmpBasedMaxUtil {
 
-    static public String[] handleSingleFile(){
-        OpenDialog od = new OpenDialog("Choose .tiff File");
-        String filePath=od.getPath();
+    static public String[] handleSingleFile(String filePath){
         if (isTiffExtension(filePath)) {
             return new String[]{filePath};
         } else {
@@ -27,9 +25,7 @@ public class SmpBasedMaxUtil {
         }
     }
 
-    static public String[] handleMultipleFiles (){
-        DirectoryChooser dc = new DirectoryChooser("Choose Directory");
-        String dirPath = dc.getDirectory();
+    static public String[] handleMultipleFiles (String dirPath){
         String[] filePaths = listFilesInDirectory(dirPath);
         if (filePaths == null) return null;
         // check for .tiff file extension
