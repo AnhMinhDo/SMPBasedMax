@@ -18,34 +18,36 @@ public class SMP_based_Max implements PlugIn {
     public void run(String arg) {
         while(true) {
             final int[] chooser = new int[]{1};
-            String currentDir = IJ.getDirectory("file");
+            String currentDir = IJ.getDirectory("current");
+            String currentFile = IJ.getDirectory("image");
+            String[] modes = new String[]{"Single File", "Multiple Files"};
             // dialog with button to choose Single file or Multiple file
             GenericDialog processOptions = new NonBlockingGenericDialog("SMP based Max");
             processOptions.addMessage("Choose an option:");
             processOptions.addButton("Single File", (event) -> chooser[0] = 1);
             processOptions.addButton("Multiple Files", (event) -> chooser[0] = 2);
-            processOptions.addStringField("Direction of z-stack (IN or OUT): ", "IN", 10);
+            processOptions.addRadioButtonGroup("Process Mode: ",modes,1,2,modes[0]);
+//            processOptions.addStringField("Direction of z-stack (IN or OUT): ", "IN", 10);
+            processOptions.addEnumChoice("Direction of z-stack", ZStackDirection.values(),ZStackDirection.IN);
             processOptions.addNumericField("Enter envelope stiffness [pixels]:  ", 30, 0);
             processOptions.addNumericField("Enter final filter size [pixels]: ", 30, 0);
             processOptions.addNumericField("Offset: N planes above (+) or below (-) blanket [pixels]:  ", 2, 0);
             processOptions.addNumericField("Depth: MIP for N pixels into blanket [pixels]:  ", 0, 0);
-            processOptions.addDirectoryField("image source", currentDir,30);
+            processOptions.addDirectoryField("Directory for batch projection", currentDir,30);
+            processOptions.addFileField("File path for single file Projection", currentFile, 30);
             processOptions.showDialog();
             if (processOptions.wasCanceled()) return;
 
             // Retrieve parameter values from dialog
-            String zStackDirectionString = processOptions.getNextString();
-            ZStackDirection zStackDirection;
-            if (zStackDirectionString.equalsIgnoreCase("OUT")) {
-                zStackDirection = ZStackDirection.OUT;
-            } else {
-                zStackDirection = ZStackDirection.IN;
-            }
+            ZStackDirection zStackDirection = processOptions.getNextEnumChoice(ZStackDirection.class);
             int stiffness = (int) processOptions.getNextNumber();
             int filterSize = (int) processOptions.getNextNumber();
             int offset = (int) processOptions.getNextNumber();
             int depth = (int) processOptions.getNextNumber();
-
+            String dirPath = processOptions.getNextString();
+            String filePath = processOptions.getNextString();
+            IJ.showMessage(dirPath);
+            IJ.showMessage(filePath);
             // If users choose Single File
             String[] validFilePath = new String[0];
             if (chooser[0] == 1) {
