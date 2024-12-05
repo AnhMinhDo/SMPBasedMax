@@ -1,5 +1,5 @@
 package smpBasedMax;
 
 public enum ProcessingMode {
-    SINGLE, BATCH
+    SINGLE_FILE, MULTIPLE_FILES
 }
