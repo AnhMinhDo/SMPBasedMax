@@ -11,23 +11,20 @@ import ij.io.FileSaver;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.stream.Stream;
 
 
 public class SMP_based_Max implements PlugIn {
     @Override
     public void run(String arg) {
         while(true) {
-            final int[] chooser = new int[]{1};
+            // default parameters for the dialog
             String currentDir = IJ.getDirectory("current");
             String currentFile = IJ.getDirectory("image");
-            String[] modes = new String[]{"Single File", "Multiple Files"};
+            String[] modes = Stream.of(ProcessingMode.values()).map(Enum::name).toArray(String[]::new);
             // dialog with button to choose Single file or Multiple file
             GenericDialog processOptions = new NonBlockingGenericDialog("SMP based Max");
-            processOptions.addMessage("Choose an option:");
-            processOptions.addButton("Single File", (event) -> chooser[0] = 1);
-            processOptions.addButton("Multiple Files", (event) -> chooser[0] = 2);
             processOptions.addRadioButtonGroup("Process Mode: ",modes,1,2,modes[0]);
-//            processOptions.addStringField("Direction of z-stack (IN or OUT): ", "IN", 10);
             processOptions.addEnumChoice("Direction of z-stack", ZStackDirection.values(),ZStackDirection.IN);
             processOptions.addNumericField("Enter envelope stiffness [pixels]:  ", 30, 0);
             processOptions.addNumericField("Enter final filter size [pixels]: ", 30, 0);
@@ -39,6 +36,7 @@ public class SMP_based_Max implements PlugIn {
             if (processOptions.wasCanceled()) return;
 
             // Retrieve parameter values from dialog
+            ProcessingMode chosenMode = ProcessingMode.valueOf(processOptions.getNextRadioButton());
             ZStackDirection zStackDirection = processOptions.getNextEnumChoice(ZStackDirection.class);
             int stiffness = (int) processOptions.getNextNumber();
             int filterSize = (int) processOptions.getNextNumber();
@@ -46,20 +44,19 @@ public class SMP_based_Max implements PlugIn {
             int depth = (int) processOptions.getNextNumber();
             String dirPath = processOptions.getNextString();
             String filePath = processOptions.getNextString();
-            IJ.showMessage(dirPath);
-            IJ.showMessage(filePath);
+
             // If users choose Single File
             String[] validFilePath = new String[0];
-            if (chooser[0] == 1) {
-                validFilePath = SmpBasedMaxUtil.handleSingleFile();
+            if (chosenMode == ProcessingMode.SINGLE_FILE) {
+                validFilePath = SmpBasedMaxUtil.handleSingleFile(filePath);
                 if (validFilePath == null) {
                     IJ.showMessage("No file selected for Single File option.");
                     return;
                 }
             }
             // if users choose Multiple Files
-            if (chooser[0] == 2) {
-                validFilePath = SmpBasedMaxUtil.handleMultipleFiles();
+            if (chosenMode == ProcessingMode.MULTIPLE_FILES) {
+                validFilePath = SmpBasedMaxUtil.handleMultipleFiles(dirPath);
                 if (validFilePath != null) {
                     String[] fileNames = new String[validFilePath.length];
                     for (int i = 0; i < validFilePath.length; i++) {
