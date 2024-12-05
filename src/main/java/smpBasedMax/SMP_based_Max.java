@@ -22,7 +22,7 @@ public class SMP_based_Max implements PlugIn {
             String[] modes = Stream.of(ProcessingMode.values()).map(Enum::name).toArray(String[]::new);
             // dialog with button to choose Single file or Multiple file
             NonBlockingGenericDialog processOptions = new NonBlockingGenericDialog("SMP based Max");
-            processOptions.addRadioButtonGroup("Process Mode: ",modes,1,2,modes[0]);
+            processOptions.addRadioButtonGroup("Process Mode: ",modes,1,ProcessingMode.values().length, modes[0]);
             processOptions.addEnumChoice("Direction of z-stack", ZStackDirection.values(),ZStackDirection.IN);
             processOptions.addNumericField("Enter envelope stiffness [pixels]:  ", 30, 0);
             processOptions.addNumericField("Enter final filter size [pixels]: ", 30, 0);
