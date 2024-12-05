@@ -19,6 +19,7 @@ public class SMP_based_Max implements PlugIn {
             // default parameters for the dialog
             String currentDir = IJ.getDirectory("current");
             String currentFile = IJ.getDirectory("image");
+            // extreact all the values in ProcessingMode ENUM class
             String[] modes = Stream.of(ProcessingMode.values()).map(Enum::name).toArray(String[]::new);
             // dialog with button to choose Single file or Multiple file
             NonBlockingGenericDialog processOptions = new NonBlockingGenericDialog("SMP based Max");
@@ -60,13 +61,6 @@ public class SMP_based_Max implements PlugIn {
                     for (int i = 0; i < validFilePath.length; i++) {
                         fileNames[i] = SmpBasedMaxUtil.extractFilename(validFilePath[i]);
                     }
-//                    IJ.showMessage("Selected Parameters and File names",
-//                            "Selected file: " + Arrays.toString(fileNames) + "\n" +
-//                                    "Direction of z-stack: " + zStackDirection + "\n" +
-//                                    "Envelope Stiffness: " + stiffness + "\n" +
-//                                    "Final Filter Size: " + filterSize + "\n" +
-//                                    "Offset: " + offset + "\n" +
-//                                    "Depth: " + depth);
                 } else {
                     IJ.showMessage("No file selected for multiple-files Option.");
                     return;
