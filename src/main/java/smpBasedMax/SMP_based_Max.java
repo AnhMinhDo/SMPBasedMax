@@ -29,8 +29,8 @@ public class SMP_based_Max implements PlugIn {
             processOptions.addNumericField("Enter final filter size [pixels]: ", 30, 0);
             processOptions.addNumericField("Offset: N planes above (+) or below (-) blanket [pixels]:  ", 2, 0);
             processOptions.addNumericField("Depth: MIP for N pixels into blanket [pixels]:  ", 0, 0);
-            processOptions.addDirectoryField("Directory for batch projection", currentDir,30);
-            processOptions.addFileField("File path for single file Projection", currentFile, 30);
+            processOptions.addDirectoryField("Directory for MULTIPLE FILES", currentDir,30);
+            processOptions.addFileField("File path for SINGLE FILE", currentFile, 30);
             processOptions.showDialog();
             if (processOptions.wasCanceled()) return;
 
@@ -71,9 +71,18 @@ public class SMP_based_Max implements PlugIn {
             for (String filepath : validFilePath) {
                 // create imagePlus object fromm filePath
                 ImagePlus inputImage = new ImagePlus(filepath);
+                // check if stack is grayscale
+                if(inputImage.getNChannels() > 1 ||
+                        (inputImage.getType() != ImagePlus.GRAY8 &&
+                                inputImage.getType() != ImagePlus.GRAY16 &&
+                                inputImage.getType() != ImagePlus.GRAY32)){
+                    // TODO: function to convert multi channels stack to grayscale stack
+                }
                 // convert to 16 bit gray scale
-                StackConverter stackConverter = new StackConverter(inputImage);
-                stackConverter.convertToGray16();
+                if (inputImage.getType() != ImagePlus.GRAY16) {
+                    StackConverter stackConverter = new StackConverter(inputImage);
+                    stackConverter.convertToGray16();
+                }
                 // ZProjecting MIP
                 MaxIntensityProjection projector = new MaxIntensityProjection(inputImage);
                 ImagePlus projectedImage = projector.doProjection();
