@@ -1,6 +1,10 @@
 package smpBasedMax;
 
 
+import ij.ImagePlus;
+import ij.ImageStack;
+import ij.plugin.ChannelSplitter;
+
 import java.util.ArrayList;
 
 import java.io.File;
@@ -92,4 +96,52 @@ public class SmpBasedMaxUtil {
         return resultDir.toString();
     }
 
+    public static ImagePlus RGBStackToGrayscaleStack(ImagePlus imp){
+        ImageStack[] channels = ChannelSplitter.splitRGB(imp.getStack(),true);
+        ImageStack redStack = channels[0];
+        ImageStack greenStack = channels[1];
+        ImageStack blueStack = channels[2];
+        ImageStack resultStack = ImageStack.create(redStack.getWidth(), redStack.getHeight(),
+                                                redStack.getSize(), 16);
+        for (int currentSlice = 0; currentSlice < redStack.getSize(); currentSlice++) {
+            short[] redPixelArray = (short[]) redStack.getPixels(currentSlice);
+            short[] greenPixelArray = (short[]) greenStack.getPixels(currentSlice);
+            short[] bluePixelArray = (short[]) blueStack.getPixels(currentSlice);
+            float[] resultPixelArray = (float[]) resultStack.getProcessor(currentSlice).getPixels();
+            for (int i = 0; i < resultPixelArray.length; i++) {
+                resultPixelArray[i] = calculateBrightnessFromRGB(redPixelArray[i],
+                                                                greenPixelArray[i],
+                                                                bluePixelArray[i]);
+            }
+        }
+        return new ImagePlus(imp.getTitle(), resultStack);
+
+    }
+    public static float calculateBrightnessFromRGB(short redValue, short greenValue, short blueValue) {
+        return (float)(0.2125*redValue + 0.7154*greenValue + 0.0721*blueValue);
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
