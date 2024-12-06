@@ -96,6 +96,16 @@ public class SmpBasedMaxUtil {
         return resultDir.toString();
     }
 
+    /**
+     * function to Convert RGB Image Stack to Grayscale
+     * Logic: The human perception of color brightness is different between each one, with green is the brightest.
+     * Therefore, each channel value needed to be multiple with the suitable coefficient.
+     * these coefficient is used to weight how much each channel contributed to the total brightness(grayscale)
+     * grayscale_value = 0.2125 Red + 0.7154 Green + 0.0721 Blue
+     * source: https://poynton.ca/PDFs/ColorFAQ.pdf (page 6)
+     * @param imp ImagePlus object of the RGB Stack
+     * @return ImagePlus object of the grayscale Stack
+     */
     public static ImagePlus RGBStackToGrayscaleStack(ImagePlus imp){
         ImageStack[] channels = ChannelSplitter.splitRGB(imp.getStack(),true);
         ImageStack redStack = channels[0];
