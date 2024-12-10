@@ -118,7 +118,6 @@ public class SMProjection {
         // When z-stack direction out of the tissue
         if (zStackDirection == ZStackDirection.OUT) {
                 float[] env1Up = new float[numberOfRows * numberOfColumns];
-                float[] env2Up = new float[numberOfRows * numberOfColumns];
                 float[] MIP_zmapzValuesTransposed = ConvertUtil.transpose1D(copyOfOriginalArrayValue, numberOfRows, numberOfColumns);
                 float[] env2UpTransposed = new float[MIP_zmapzValuesTransposed.length];
                 // Perform Interpolation for original array
@@ -132,15 +131,13 @@ public class SMProjection {
                     System.arraycopy(interpolatedZvalues, 0, env2UpTransposed, i, numberOfRows);
                 }
                 // transpose the env2UpTransposed to revert back to original size
-                float[] env2UpTransposedTransposed = ConvertUtil.transpose1D(env2UpTransposed, numberOfColumns, numberOfRows);
-                System.arraycopy(env2UpTransposedTransposed, 0, env2Up, 0, env2UpTransposedTransposed.length);
+                float[] env2Up = ConvertUtil.transpose1D(env2UpTransposed, numberOfColumns, numberOfRows);
                 // remove outliers and round up
                 roundUpRemoveOutliers(env1Up, env2Up, referenceToFloatArrayContainImageValues, numberOfSlices);
             }
         // When z-stack direction into the tissue
         else if (zStackDirection == ZStackDirection.IN) {
                 float[] env1Low = new float[numberOfRows * numberOfColumns];
-                float[] env2Low = new float[numberOfRows * numberOfColumns];
                 float[] MIP_zmapzValuesTransposed = ConvertUtil.transpose1D(copyOfOriginalArrayValue, numberOfRows, numberOfColumns);
                 float[] env2LowTransposed = new float[MIP_zmapzValuesTransposed.length];
                 // Perform Interpolation for original array
@@ -154,8 +151,7 @@ public class SMProjection {
                     System.arraycopy(interpolatedZvalues, 0, env2LowTransposed, i, numberOfRows);
                 }
                 // transpose the env2LowTransposed to revert back to original size
-                float[] env2LowTransposedTransposed = ConvertUtil.transpose1D(env2LowTransposed, numberOfColumns, numberOfRows);
-                System.arraycopy(env2LowTransposedTransposed, 0, env2Low, 0, env2LowTransposedTransposed.length);
+                float[] env2Low = ConvertUtil.transpose1D(env2LowTransposed, numberOfColumns, numberOfRows);
                 // remove outliers and round up
                 roundUpRemoveOutliers(env1Low, env2Low, referenceToFloatArrayContainImageValues, numberOfSlices);
             }
