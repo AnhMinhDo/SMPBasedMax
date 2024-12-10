@@ -127,6 +127,7 @@ public class SmpBasedMaxUtil {
         return new ImagePlus(imp.getTitle(), resultStack);
 
     }
+
     public static float calculateBrightnessFromRGB(short redValue, short greenValue, short blueValue) {
         return (float)(0.2125*redValue + 0.7154*greenValue + 0.0721*blueValue);
     }
