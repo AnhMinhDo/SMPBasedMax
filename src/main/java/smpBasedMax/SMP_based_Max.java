@@ -76,7 +76,8 @@ public class SMP_based_Max implements PlugIn {
                         (inputImage.getType() != ImagePlus.GRAY8 &&
                                 inputImage.getType() != ImagePlus.GRAY16 &&
                                 inputImage.getType() != ImagePlus.GRAY32)){
-                    // TODO: function to convert multi channels stack to grayscale stack
+                    // convert multi channels stack to grayscale stack
+                    inputImage =SmpBasedMaxUtil.RGBStackToGrayscaleStack(inputImage);
                 }
                 // convert to 16 bit gray scale
                 if (inputImage.getType() != ImagePlus.GRAY16) {
