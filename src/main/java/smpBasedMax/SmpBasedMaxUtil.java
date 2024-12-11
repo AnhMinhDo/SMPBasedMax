@@ -102,7 +102,7 @@ public class SmpBasedMaxUtil {
      * Therefore, each channel value needed to be multiple with the suitable coefficient.
      * these coefficient is used to weight how much each channel contributed to the total brightness(grayscale)
      * grayscale_value = 0.2125 Red + 0.7154 Green + 0.0721 Blue
-     * source: https://poynton.ca/PDFs/ColorFAQ.pdf (page 6)
+     * source: <a href="https://poynton.ca/PDFs/ColorFAQ.pdf">...</a> (page 6)
      * @param imp ImagePlus object of the RGB Stack
      * @return ImagePlus object of the grayscale Stack
      */
