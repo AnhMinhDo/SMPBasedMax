@@ -15,10 +15,10 @@ import java.util.stream.Stream;
 public class SMP_based_Max implements PlugIn {
     @Override
     public void run(String arg) {
+        String currentFile = IJ.getDirectory("image");
         while(true) {
             // default parameters for the dialog
             String currentDir = IJ.getDirectory("current");
-            String currentFile = IJ.getDirectory("image");
             // extract all the values in ProcessingMode ENUM class
             String[] modes = Stream.of(ProcessingMode.values()).map(Enum::name).toArray(String[]::new);
             // dialog with button to choose Single file or Multiple file
@@ -43,7 +43,7 @@ public class SMP_based_Max implements PlugIn {
             int depth = (int) processOptions.getNextNumber();
             String dirPath = processOptions.getNextString();
             String filePath = processOptions.getNextString();
-
+            currentFile = filePath; // save opened filepath
             // If users choose Single File
             String[] validFilePath = new String[0];
             if (chosenMode == ProcessingMode.SINGLE_FILE) {
