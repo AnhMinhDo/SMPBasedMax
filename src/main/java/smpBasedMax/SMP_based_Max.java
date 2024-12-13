@@ -6,6 +6,7 @@ import ij.gui.NonBlockingGenericDialog;
 import ij.plugin.PlugIn;
 import ij.process.StackConverter;
 import ij.io.FileSaver;
+import ij.Prefs;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,12 +16,12 @@ import java.util.stream.Stream;
 public class SMP_based_Max implements PlugIn {
     @Override
     public void run(String arg) {
-        String currentFile = IJ.getDirectory("image");
-        while(true) {
-            // default parameters for the dialog
-            String currentDir = IJ.getDirectory("current");
-            // extract all the values in ProcessingMode ENUM class
-            String[] modes = Stream.of(ProcessingMode.values()).map(Enum::name).toArray(String[]::new);
+        // default parameters for the dialog
+        String currentFile = Prefs.get("SMP_based_Max.settings.currentFile", "");
+        String currentDir = Prefs.get("SMP_based_Max.settings.currentDir", "");
+        // extract all the values in ProcessingMode ENUM class
+        String[] modes = Stream.of(ProcessingMode.values()).map(Enum::name).toArray(String[]::new);
+        while(true) { // keep the dialog opens after each run
             // dialog with button to choose Single file or Multiple file
             NonBlockingGenericDialog processOptions = new NonBlockingGenericDialog("SMP based Max");
             processOptions.addRadioButtonGroup("Process Mode: ",modes,1,ProcessingMode.values().length, modes[0]);
@@ -43,7 +44,10 @@ public class SMP_based_Max implements PlugIn {
             int depth = (int) processOptions.getNextNumber();
             String dirPath = processOptions.getNextString();
             String filePath = processOptions.getNextString();
-            currentFile = filePath; // save opened filepath
+            Prefs.set("SMP_based_Max.settings.currentDir", dirPath);  // save opened dirPath
+            Prefs.set("SMP_based_Max.settings.currentFile",filePath); // save opened filePath
+            currentDir = dirPath;
+            currentFile = filePath;
             // If users choose Single File
             String[] validFilePath = new String[0];
             if (chosenMode == ProcessingMode.SINGLE_FILE) {
