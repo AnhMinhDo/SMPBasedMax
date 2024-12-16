@@ -19,6 +19,10 @@ public class SMP_based_Max implements PlugIn {
         // default parameters for the dialog
         String currentFile = Prefs.get("SMP_based_Max.settings.currentFile", "");
         String currentDir = Prefs.get("SMP_based_Max.settings.currentDir", "");
+        int defaultStiffness = Prefs.getInt("SMP_based_Max.settings.defaultStiffness", 60);
+        int defaultFilterSize = Prefs.getInt("SMP_based_Max.settings.defaultFilterSize", 30);
+        int defaultOffset = Prefs.getInt("SMP_based_Max.settings.defaultOffset", 7);
+        int defaultDepth = Prefs.getInt("SMP_based_Max.settings.defaultDepth", 0);
         // extract all the values in ProcessingMode ENUM class
         String[] modes = Stream.of(ProcessingMode.values()).map(Enum::name).toArray(String[]::new);
         while(true) { // keep the dialog opens after each run
@@ -26,10 +30,10 @@ public class SMP_based_Max implements PlugIn {
             NonBlockingGenericDialog processOptions = new NonBlockingGenericDialog("SMP based Max");
             processOptions.addRadioButtonGroup("Process Mode: ",modes,1,ProcessingMode.values().length, modes[0]);
             processOptions.addEnumChoice("Direction of z-stack", ZStackDirection.values(),ZStackDirection.IN);
-            processOptions.addNumericField("Enter envelope stiffness [pixels]:  ", 30, 0);
-            processOptions.addNumericField("Enter final filter size [pixels]: ", 30, 0);
-            processOptions.addNumericField("Offset: N planes above (+) or below (-) blanket [pixels]:  ", 2, 0);
-            processOptions.addNumericField("Depth: MIP for N pixels into blanket [pixels]:  ", 0, 0);
+            processOptions.addNumericField("Enter envelope stiffness [pixels]:  ", defaultStiffness, 0);
+            processOptions.addNumericField("Enter final filter size [pixels]: ", defaultFilterSize, 0);
+            processOptions.addNumericField("Offset: N planes above (+) or below (-) blanket [pixels]:  ", defaultOffset, 0);
+            processOptions.addNumericField("Depth: MIP for N pixels into blanket [pixels]:  ", defaultDepth, 0);
             processOptions.addDirectoryField("Directory for MULTIPLE FILES", currentDir,30);
             processOptions.addFileField("File path for SINGLE FILE", currentFile, 30);
             processOptions.showDialog();
@@ -44,10 +48,22 @@ public class SMP_based_Max implements PlugIn {
             int depth = (int) processOptions.getNextNumber();
             String dirPath = processOptions.getNextString();
             String filePath = processOptions.getNextString();
-            Prefs.set("SMP_based_Max.settings.currentDir", dirPath);  // save opened dirPath
-            Prefs.set("SMP_based_Max.settings.currentFile",filePath); // save opened filePath
+            // save parameters to Prefs when plugin is closed
+            Prefs.set("SMP_based_Max.settings.currentDir", dirPath);
+            Prefs.set("SMP_based_Max.settings.currentFile",filePath);
+            Prefs.set("SMP_based_Max.settings.defaultStiffness", stiffness);
+            Prefs.set("SMP_based_Max.settings.defaultFilterSize", filterSize);
+            Prefs.set("SMP_based_Max.settings.defaultOffset", offset);
+            Prefs.set("SMP_based_Max.settings.defaultDepth", depth);
+
+            // update the values in while loop
             currentDir = dirPath;
             currentFile = filePath;
+            defaultStiffness = stiffness;
+            defaultFilterSize = filterSize;
+            defaultOffset = offset;
+            defaultDepth = depth;
+
             // If users choose Single File
             String[] validFilePath = new String[0];
             if (chosenMode == ProcessingMode.SINGLE_FILE) {
