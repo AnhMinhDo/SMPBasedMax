@@ -1,7 +1,7 @@
 # Smooth Manifold based Maximum Intensity Projection
 
 ## Description:
-Fiji/ImageJ Plugin for Smooth-Manifold-based MIP
+Fiji/ImageJ Plugin for MIP-based Smooth Manifold Projection
 
 ## Plugin Interface Preview:
 The interface may vary depending on the user's operating system.
