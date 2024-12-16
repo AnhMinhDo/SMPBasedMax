@@ -1,19 +1,49 @@
 package smpBasedMax;
 
+import ij.ImagePlus;
+import ij.ImageStack;
+
 public class ConvertUtil {
 
-        /**
-         * Converts an Integer[] array to int[] array
-         * @param integers The Integer array
-         * @return int[] The primitive array
-         */
-        public static int[] convertToPrimitiveInt (Integer[] integers) {
-            int[] result = new int[integers.length];
-            for (int i = 0; i < integers.length; i++) {
-                result[i] = integers[i];
+    /**
+     * Converts a timeSeries to  Stack, remove the time Dimension
+     * @param hyperstack ImagePlus object of timeSeries
+     * @return ImagePlus
+     */
+    public static ImagePlus convertTimeSeriesToStack(ImagePlus hyperstack) {
+        // Get dimensions
+        int nChannels = hyperstack.getNChannels();
+        int nSlices = hyperstack.getNSlices();
+        int nFrames = hyperstack.getNFrames();
+        // Create a new stack to combine slices
+        ImageStack combinedStack = new ImageStack(hyperstack.getWidth(), hyperstack.getHeight());
+
+        // Iterate over time frames
+        for (int t = 1; t <= nFrames; t++) {
+            for (int c = 1; c <= nChannels; c++) {
+                for (int z = 1; z <= nSlices; z++) {
+                    // Extract the slice for each (channel, slice, frame)
+                    int index = hyperstack.getStackIndex(c, z, t);
+                    combinedStack.addSlice(hyperstack.getStack().getProcessor(index));
+                }
             }
-            return result;
         }
+        // Create a new ImagePlus for the combined stack
+        return new ImagePlus(hyperstack.getTitle(), combinedStack);
+    }
+
+    /**
+     * Converts an Integer[] array to int[] array
+     * @param integers The Integer array
+     * @return int[] The primitive array
+     */
+    public static int[] convertToPrimitiveInt (Integer[] integers) {
+        int[] result = new int[integers.length];
+        for (int i = 0; i < integers.length; i++) {
+            result[i] = integers[i];
+        }
+        return result;
+    }
 
     /**
      * Convert a Double[] to float[]
