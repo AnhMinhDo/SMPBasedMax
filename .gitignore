@@ -4,6 +4,9 @@ out/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
+## automatition script
+zip_jar_files.sh
+
 ### IntelliJ IDEA ###
 .idea/modules.xml
 .idea/jarRepositories.xml
