@@ -27,6 +27,6 @@ Below is the interface when the plugin is used on Linux Mint 22.
 ## Features:
 
 ## License:
-This project is licensed under the GNU General Public License v3.0. See the LICENSE file for more details.
+This project is licensed under the GNU General Public License v3.0. See the [LICENSE](https://github.com/AnhMinhDo/SMPBasedMax/blob/main/LICENSE.txt) file for more details.
 
 
