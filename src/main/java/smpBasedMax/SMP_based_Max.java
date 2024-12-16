@@ -19,17 +19,18 @@ public class SMP_based_Max implements PlugIn {
         // default parameters for the dialog
         String currentFile = Prefs.get("SMP_based_Max.settings.currentFile", "");
         String currentDir = Prefs.get("SMP_based_Max.settings.currentDir", "");
-        int defaultStiffness = Prefs.getInt("SMP_based_Max.settings.defaultStiffness", 60);
+        int defaultStiffness = Prefs.getInt("SMP_based_Max.settings.defaultStiffness",60);
         int defaultFilterSize = Prefs.getInt("SMP_based_Max.settings.defaultFilterSize", 30);
         int defaultOffset = Prefs.getInt("SMP_based_Max.settings.defaultOffset", 7);
         int defaultDepth = Prefs.getInt("SMP_based_Max.settings.defaultDepth", 0);
         // extract all the values in ProcessingMode ENUM class
         String[] modes = Stream.of(ProcessingMode.values()).map(Enum::name).toArray(String[]::new);
         while(true) { // keep the dialog opens after each run
+            ZStackDirection currentDirection = ZStackDirection.IN;
             // dialog with button to choose Single file or Multiple file
             NonBlockingGenericDialog processOptions = new NonBlockingGenericDialog("SMP based Max");
             processOptions.addRadioButtonGroup("Process Mode: ",modes,1,ProcessingMode.values().length, modes[0]);
-            processOptions.addEnumChoice("Direction of z-stack", ZStackDirection.values(),ZStackDirection.IN);
+            processOptions.addEnumChoice("Direction of z-stack", ZStackDirection.values(), currentDirection);
             processOptions.addNumericField("Enter envelope stiffness [pixels]:  ", defaultStiffness, 0);
             processOptions.addNumericField("Enter final filter size [pixels]: ", defaultFilterSize, 0);
             processOptions.addNumericField("Offset: N planes above (+) or below (-) blanket [pixels]:  ", defaultOffset, 0);
@@ -59,6 +60,7 @@ public class SMP_based_Max implements PlugIn {
             // update the values in while loop
             currentDir = dirPath;
             currentFile = filePath;
+            currentDirection = zStackDirection;
             defaultStiffness = stiffness;
             defaultFilterSize = filterSize;
             defaultOffset = offset;
