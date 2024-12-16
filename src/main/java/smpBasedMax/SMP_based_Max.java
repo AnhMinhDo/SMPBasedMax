@@ -19,14 +19,14 @@ public class SMP_based_Max implements PlugIn {
         // default parameters for the dialog
         String currentFile = Prefs.get("SMP_based_Max.settings.currentFile", "");
         String currentDir = Prefs.get("SMP_based_Max.settings.currentDir", "");
-        int defaultStiffness = Prefs.getInt("SMP_based_Max.settings.defaultStiffness",60);
-        int defaultFilterSize = Prefs.getInt("SMP_based_Max.settings.defaultFilterSize", 30);
-        int defaultOffset = Prefs.getInt("SMP_based_Max.settings.defaultOffset", 7);
-        int defaultDepth = Prefs.getInt("SMP_based_Max.settings.defaultDepth", 0);
+        double defaultStiffness = Prefs.get("SMP_based_Max.settings.defaultStiffness",60);
+        double defaultFilterSize =  Prefs.get("SMP_based_Max.settings.defaultFilterSize", 30);
+        double defaultOffset = Prefs.get("SMP_based_Max.settings.defaultOffset", 7);
+        double defaultDepth = Prefs.get("SMP_based_Max.settings.defaultDepth", 0);
         // extract all the values in ProcessingMode ENUM class
         String[] modes = Stream.of(ProcessingMode.values()).map(Enum::name).toArray(String[]::new);
-        while(true) { // keep the dialog opens after each run
-            ZStackDirection currentDirection = ZStackDirection.IN;
+        ZStackDirection currentDirection = ZStackDirection.IN;
+        while(true) { // keep the dialog open after each run
             // dialog with button to choose Single file or Multiple file
             NonBlockingGenericDialog processOptions = new NonBlockingGenericDialog("SMP based Max");
             processOptions.addRadioButtonGroup("Process Mode: ",modes,1,ProcessingMode.values().length, modes[0]);
