@@ -19,17 +19,22 @@ public class SMP_based_Max implements PlugIn {
         // default parameters for the dialog
         String currentFile = Prefs.get("SMP_based_Max.settings.currentFile", "");
         String currentDir = Prefs.get("SMP_based_Max.settings.currentDir", "");
+        double defaultStiffness = Prefs.get("SMP_based_Max.settings.defaultStiffness",60);
+        double defaultFilterSize =  Prefs.get("SMP_based_Max.settings.defaultFilterSize", 30);
+        double defaultOffset = Prefs.get("SMP_based_Max.settings.defaultOffset", 7);
+        double defaultDepth = Prefs.get("SMP_based_Max.settings.defaultDepth", 0);
         // extract all the values in ProcessingMode ENUM class
         String[] modes = Stream.of(ProcessingMode.values()).map(Enum::name).toArray(String[]::new);
-        while(true) { // keep the dialog opens after each run
+        ZStackDirection currentDirection = ZStackDirection.IN;
+        while(true) { // keep the dialog open after each run
             // dialog with button to choose Single file or Multiple file
             NonBlockingGenericDialog processOptions = new NonBlockingGenericDialog("SMP based Max");
             processOptions.addRadioButtonGroup("Process Mode: ",modes,1,ProcessingMode.values().length, modes[0]);
-            processOptions.addEnumChoice("Direction of z-stack", ZStackDirection.values(),ZStackDirection.IN);
-            processOptions.addNumericField("Enter envelope stiffness [pixels]:  ", 30, 0);
-            processOptions.addNumericField("Enter final filter size [pixels]: ", 30, 0);
-            processOptions.addNumericField("Offset: N planes above (+) or below (-) blanket [pixels]:  ", 2, 0);
-            processOptions.addNumericField("Depth: MIP for N pixels into blanket [pixels]:  ", 0, 0);
+            processOptions.addEnumChoice("Direction of z-stack", ZStackDirection.values(), currentDirection);
+            processOptions.addNumericField("Enter envelope stiffness [pixels]:  ", defaultStiffness, 0);
+            processOptions.addNumericField("Enter final filter size [pixels]: ", defaultFilterSize, 0);
+            processOptions.addNumericField("Offset: N planes above (+) or below (-) blanket [pixels]:  ", defaultOffset, 0);
+            processOptions.addNumericField("Depth: MIP for N pixels into blanket [pixels]:  ", defaultDepth, 0);
             processOptions.addDirectoryField("Directory for MULTIPLE FILES", currentDir,30);
             processOptions.addFileField("File path for SINGLE FILE", currentFile, 30);
             processOptions.showDialog();
@@ -44,10 +49,23 @@ public class SMP_based_Max implements PlugIn {
             int depth = (int) processOptions.getNextNumber();
             String dirPath = processOptions.getNextString();
             String filePath = processOptions.getNextString();
-            Prefs.set("SMP_based_Max.settings.currentDir", dirPath);  // save opened dirPath
-            Prefs.set("SMP_based_Max.settings.currentFile",filePath); // save opened filePath
+            // save parameters to Prefs when plugin is closed
+            Prefs.set("SMP_based_Max.settings.currentDir", dirPath);
+            Prefs.set("SMP_based_Max.settings.currentFile",filePath);
+            Prefs.set("SMP_based_Max.settings.defaultStiffness", stiffness);
+            Prefs.set("SMP_based_Max.settings.defaultFilterSize", filterSize);
+            Prefs.set("SMP_based_Max.settings.defaultOffset", offset);
+            Prefs.set("SMP_based_Max.settings.defaultDepth", depth);
+
+            // update the values in while loop
             currentDir = dirPath;
             currentFile = filePath;
+            currentDirection = zStackDirection;
+            defaultStiffness = stiffness;
+            defaultFilterSize = filterSize;
+            defaultOffset = offset;
+            defaultDepth = depth;
+
             // If users choose Single File
             String[] validFilePath = new String[0];
             if (chosenMode == ProcessingMode.SINGLE_FILE) {
@@ -75,13 +93,14 @@ public class SMP_based_Max implements PlugIn {
             for (String filepath : validFilePath) {
                 // create imagePlus object fromm filePath
                 ImagePlus inputImage = new ImagePlus(filepath);
-                // check if stack is grayscale
+                // check if stack is time series, perform flatten to create new stack without time dimension
+                inputImage = inputImage.getNFrames() > 1 ? ConvertUtil.convertTimeSeriesToStack(inputImage) : inputImage;
+                // convert RGB to grayScale
                 if(inputImage.getNChannels() > 1 ||
                         (inputImage.getType() != ImagePlus.GRAY8 &&
                                 inputImage.getType() != ImagePlus.GRAY16 &&
                                 inputImage.getType() != ImagePlus.GRAY32)){
-                    // convert multi channels stack to grayscale stack
-                    inputImage =SmpBasedMaxUtil.RGBStackToGrayscaleStack(inputImage);
+                    inputImage =SmpBasedMaxUtil.RGBStackToGrayscaleStack(inputImage); // perform conversion
                 }
                 // convert to 16 bit gray scale
                 if (inputImage.getType() != ImagePlus.GRAY16) {
@@ -104,11 +123,11 @@ public class SMP_based_Max implements PlugIn {
                 try {
                     // prepare the directory for output
                     String resultDir = SmpBasedMaxUtil.createResultDir(filepath,
-                            zStackDirection,
-                            stiffness,
-                            filterSize,
-                            offset,
-                            depth);
+                                                                        zStackDirection,
+                                                                        stiffness,
+                                                                        filterSize,
+                                                                        offset,
+                                                                        depth);
                     String fileName = SmpBasedMaxUtil.extractFilename(filepath);
                     // Save MIP projected Image and zMap
                     FileSaver projectedImageTiff = new FileSaver(projectedImage);
@@ -126,8 +145,8 @@ public class SMP_based_Max implements PlugIn {
                     smpZmapTiff.saveAsTiff(resultDir + File.separator +
                             fileName + "_SMP_zmap" + "_stiffness" + stiffness +
                             "_filterSize" + filterSize + "_offSet" + offset + ".tif");
+                    // Save SMP depth-adjusted image and zMap
                     if (depth != 0) {
-                        // Save SMP-MIP projected image and zMap
                         FileSaver projectedSMPMIPImageTiff = new FileSaver(projectedSMPMIPImage);
                         FileSaver smpMipZmapTiff = new FileSaver(smpMipZmap);
                         projectedSMPMIPImageTiff.saveAsTiff(resultDir + File.separator +

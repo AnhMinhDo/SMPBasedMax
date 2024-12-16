@@ -1,14 +1,30 @@
 # Smooth Manifold based Maximum Intensity Projection
 
-## Project Classes Overview:
-[![Current Project classes](./src/main/resources/SMPBasedMax_classes.png)]
+## Description:
+Fiji/ImageJ Plugin for Smooth-Manifold-based MIP
 
-**SMP_based_Max**: Main class for the plugin, handle UI related processes.
+## Plugin Interface Preview:
+The interface may vary depending on the user's operating system.
+Below is the interface when the plugin is used on Linux Mint 22.
+![Fiji Menu](src/main/resources/Fiji_menu.png)
+![Plugin Interface](src/main/resources/UI_plugin_16_Dec.png)
 
-**MaxIntensityProjection**: custom class to perform MIP on Image Stack, return projected Image and the z-map
+## ImageJ Plugin instructions:
+### Prerequisites and installation:
+1. If Fiji is not installed, download and install a version, preferably bundled with JRE 1.8 (https://imagej.net/software/fiji/).
+   If you already have Fiji installed, ensure it uses Java 1.8 or later.
+2. Download the SMP_based_Max.zip file and place the .jar file in the "plugins" folder of your Fiji installation.
+### Usage:
+1. From Plugins menu in Fiji, choose SMP_based_Max; The plugin dialog  will be displayed.
+2. Choose SINGLE_FILE Mode for single .tiff file processing and MULTIPLE_FILES Mode for batch processing.
+3. click browse button at "File path for SINGLE FILE" to choose the targeted file or "Directory for MULTIPLE FILES" to choose directory containing targeted .tiff files.
+4. Adjust the parameters (direction of the stack, stiffness, filter size, offset, depth(optional))
+5. click OK  to start the projection process.
+6. Output folder(s) is created at the same directory of the input .tiff file(s).
+7. Output includes: Maximum Intensity projected Image(MIP), MIP corresponding z_map, Smooth Manifold MIP-based projected image(SMP), SMP corresponding z_map; if depth parameter is not 0, SMP-adjusted projected image and corresponding z_map
+## Features:
 
-**Envelope**: to obtain the upper and lower peak evelopes of signal
+## License:
+This project is licensed under the GNU General Public License v3.0. See the LICENSE file for more details.
 
-**SmpBasedMaxUtil**: class contains static functions to handle file input output, signal peak detection
 
-**ConvertUtil**: class contains static functions for conversion of data type
