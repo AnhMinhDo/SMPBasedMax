@@ -77,7 +77,7 @@ public class SMP_based_Max implements PlugIn {
                 ImagePlus inputImage = new ImagePlus(filepath);
                 // check if stack is time series
                 inputImage = inputImage.getNFrames() > 1 ? ConvertUtil.convertTimeSeriesToStack(inputImage) : inputImage;
-                // check if stack is RGB
+                // convert RGB to grayScale
                 if(inputImage.getNChannels() > 1 ||
                         (inputImage.getType() != ImagePlus.GRAY8 &&
                                 inputImage.getType() != ImagePlus.GRAY16 &&
