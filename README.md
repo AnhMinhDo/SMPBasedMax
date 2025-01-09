@@ -1,7 +1,7 @@
 # Smooth Manifold based Maximum Intensity Projection
 
 ## Description:
-Fiji/ImageJ Plugin for Smooth-Manifold-based MIP
+Fiji/ImageJ Plugin for MIP-based Smooth Manifold Projection
 
 ## Plugin Interface Preview:
 The interface may vary depending on the user's operating system.
@@ -27,6 +27,6 @@ Below is the interface when the plugin is used on Linux Mint 22.
 ## Features:
 
 ## License:
-This project is licensed under the GNU General Public License v3.0. See the LICENSE file for more details.
+This project is licensed under the GNU General Public License v3.0. See the [LICENSE](https://github.com/AnhMinhDo/SMPBasedMax/blob/main/LICENSE.txt) file for more details.
 
 
