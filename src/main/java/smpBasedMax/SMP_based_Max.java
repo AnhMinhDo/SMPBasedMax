@@ -2,6 +2,7 @@ package smpBasedMax;
 
 import ij.IJ;
 import ij.ImagePlus;
+import ij.gui.GenericDialog;
 import ij.gui.NonBlockingGenericDialog;
 import ij.plugin.PlugIn;
 import ij.process.StackConverter;
@@ -66,15 +67,27 @@ public class SMP_based_Max implements PlugIn {
             defaultOffset = offset;
             defaultDepth = depth;
 
+            // Interactive Mode
+            if (chosenMode == ProcessingMode.INTERACTIVE) {
+                new InteractiveDialog(filePath,
+                                    zStackDirection,
+                                    stiffness,
+                                    filterSize,
+                                    offset,
+                                    depth
+                                    ).show();
+            }
+
             // If users choose Single File
             String[] validFilePath = new String[0];
-            if (chosenMode == ProcessingMode.SINGLE_FILE) {
+            if (chosenMode == ProcessingMode.SINGLE_FILE | chosenMode == ProcessingMode.INTERACTIVE) {
                 validFilePath = SmpBasedMaxUtil.handleSingleFile(filePath);
                 if (validFilePath == null) {
                     IJ.showMessage("No file selected for Single File option.");
                     return;
                 }
             }
+
             // if users choose Multiple Files
             if (chosenMode == ProcessingMode.MULTIPLE_FILES) {
                 validFilePath = SmpBasedMaxUtil.handleMultipleFiles(dirPath);
@@ -88,19 +101,20 @@ public class SMP_based_Max implements PlugIn {
                     return;
                 }
             }
-
-            // Perform MIP with filePath in filePathArray
-            for (String filepath : validFilePath) {
+            // Process image(s) in non-interactive mode
+            if (chosenMode != ProcessingMode.INTERACTIVE) {
+                // Perform MIP with filePath in filePathArray
+                for (String filepath : validFilePath) {
                 // create imagePlus object fromm filePath
                 ImagePlus inputImage = new ImagePlus(filepath);
                 // check if stack is time series, perform flatten to create new stack without time dimension
                 inputImage = inputImage.getNFrames() > 1 ? ConvertUtil.convertTimeSeriesToStack(inputImage) : inputImage;
                 // convert RGB to grayScale
-                if(inputImage.getNChannels() > 1 ||
+                if (inputImage.getNChannels() > 1 ||
                         (inputImage.getType() != ImagePlus.GRAY8 &&
                                 inputImage.getType() != ImagePlus.GRAY16 &&
-                                inputImage.getType() != ImagePlus.GRAY32)){
-                    inputImage =SmpBasedMaxUtil.RGBStackToGrayscaleStack(inputImage); // perform conversion
+                                inputImage.getType() != ImagePlus.GRAY32)) {
+                    inputImage = SmpBasedMaxUtil.RGBStackToGrayscaleStack(inputImage); // perform conversion
                 }
                 // convert to 16 bit gray scale
                 if (inputImage.getType() != ImagePlus.GRAY16) {
@@ -119,15 +133,16 @@ public class SMP_based_Max implements PlugIn {
                 SMP_MIP_Projection smpMipProjector = new SMP_MIP_Projection(inputImage, smpZmap, depth, zStackDirection);
                 ImagePlus projectedSMPMIPImage = smpMipProjector.doProjection();
                 ImagePlus smpMipZmap = smpMipProjector.getZmap();
+
                 // Save files to output directory
                 try {
                     // prepare the directory for output
                     String resultDir = SmpBasedMaxUtil.createResultDir(filepath,
-                                                                        zStackDirection,
-                                                                        stiffness,
-                                                                        filterSize,
-                                                                        offset,
-                                                                        depth);
+                            zStackDirection,
+                            stiffness,
+                            filterSize,
+                            offset,
+                            depth);
                     String fileName = SmpBasedMaxUtil.extractFilename(filepath);
                     // Save MIP projected Image and zMap
                     FileSaver projectedImageTiff = new FileSaver(projectedImage);
@@ -160,6 +175,7 @@ public class SMP_based_Max implements PlugIn {
                     }
                 } catch (IOException e) {
                     throw new RuntimeException(e);
+                }
                 }
             }
         }
