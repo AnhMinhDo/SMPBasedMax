@@ -2,8 +2,8 @@ package smpBasedMax;
 
 import ij.IJ;
 import ij.ImagePlus;
+import ij.gui.GUI;
 import ij.gui.GenericDialog;
-import ij.gui.NonBlockingGenericDialog;
 import ij.plugin.PlugIn;
 import ij.process.StackConverter;
 import ij.io.FileSaver;
@@ -29,7 +29,7 @@ public class SMP_based_Max implements PlugIn {
         ZStackDirection currentDirection = ZStackDirection.IN;
         while(true) { // keep the dialog open after each run
             // dialog with button to choose Single file or Multiple file
-            NonBlockingGenericDialog processOptions = new NonBlockingGenericDialog("SMP based Max");
+            GenericDialog processOptions = GUI.newNonBlockingDialog("SMP based Max");
             processOptions.addRadioButtonGroup("Process Mode: ",modes,1,ProcessingMode.values().length, modes[0]);
             processOptions.addEnumChoice("Direction of z-stack", ZStackDirection.values(), currentDirection);
             processOptions.addNumericField("Enter envelope stiffness [pixels]:  ", defaultStiffness, 0);
