@@ -7,7 +7,7 @@ Fiji/ImageJ Plugin for MIP-based Smooth Manifold Projection
 The interface may vary depending on the user's operating system.
 Below is the interface when the plugin is used on Linux Mint 22.
 ![Fiji Menu](src/main/resources/Fiji_menu.png)
-![Plugin Interface](src/main/resources/UI_plugin_16_Dec.png)
+![Plugin Interface](src/main/resources/UI_pLugin_17_Jan_2025.png)
 
 ## ImageJ Plugin instructions:
 ### Prerequisites and installation:
@@ -18,7 +18,7 @@ Below is the interface when the plugin is used on Linux Mint 22.
 4. Open Fiji
 ### Usage:
 1. From Plugins menu in Fiji, choose SMP_based_Max; The plugin dialog  will be displayed
-2. Choose SINGLE_FILE Mode for single .tiff file processing and MULTIPLE_FILES Mode for batch processing
+2. Choose SINGLE_FILE Mode for single .tiff file processing, MULTIPLE_FILES Mode for batch processing or Interactive for tuning parameters
 3. click browse button at "File path for SINGLE FILE" to choose the targeted file or "Directory for MULTIPLE FILES" to choose directory containing targeted .tiff files.
 4. Adjust the parameters (direction of the stack, stiffness, filter size, offset, depth(optional))
 5. click OK  to start the projection process
