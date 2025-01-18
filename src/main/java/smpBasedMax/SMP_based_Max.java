@@ -155,23 +155,23 @@ public class SMP_based_Max implements PlugIn {
                     FileSaver projectedSMPImageTiff = new FileSaver(projectedSMPImage);
                     FileSaver smpZmapTiff = new FileSaver(smpZmap);
                     projectedSMPImageTiff.saveAsTiff(resultDir + File.separator +
-                            fileName + "_SMP" + "_stiffness" + stiffness + "_filterSize" + filterSize +
-                            "_offSet" + offset + ".tif");
+                            fileName + "_SMP" + "_s" + stiffness + "_f" + filterSize +
+                            "_o" + offset + ".tif");
                     smpZmapTiff.saveAsTiff(resultDir + File.separator +
-                            fileName + "_SMP_zmap" + "_stiffness" + stiffness +
-                            "_filterSize" + filterSize + "_offSet" + offset + ".tif");
+                            fileName + "_SMP_zmap" + "_s" + stiffness +
+                            "_f" + filterSize + "_o" + offset + ".tif");
                     // Save SMP depth-adjusted image and zMap
                     if (depth != 0) {
                         FileSaver projectedSMPMIPImageTiff = new FileSaver(projectedSMPMIPImage);
                         FileSaver smpMipZmapTiff = new FileSaver(smpMipZmap);
                         projectedSMPMIPImageTiff.saveAsTiff(resultDir + File.separator +
-                                fileName + "_SMPbasedMIP" + "_stiffness" + stiffness +
-                                "_filterSize" + filterSize + "_offSet" + offset +
-                                "_depth" + depth + ".tif");
+                                fileName + "_SMPbasedMIP" + "_s" + stiffness +
+                                "_f" + filterSize + "_o" + offset +
+                                "_d" + depth + ".tif");
                         smpMipZmapTiff.saveAsTiff(resultDir + File.separator +
-                                fileName + "_SMPbasedMIP_zmap" + "_stiffness" + stiffness +
-                                "_filterSize" + filterSize + "_offSet" + offset +
-                                "_depth" + depth + ".tif");
+                                fileName + "_SMPbasedMIP_zmap" + "_s" + stiffness +
+                                "_f" + filterSize + "_o" + offset +
+                                "_d" + depth + ".tif");
                     }
                 } catch (IOException e) {
                     throw new RuntimeException(e);
