@@ -91,7 +91,7 @@ public class SmpBasedMaxUtil {
         File file = new File(filePath);
         String fileName = extractFilename(filePath);
         String fileParentDir = file.getParent();
-        Path resultDir = Paths.get(fileParentDir + File.separator + direction + fileName+"_stiffness"+stiffness+"_filterSize"+filterSize+"_offSet"+offset+"_depth"+depth);
+        Path resultDir = Paths.get(fileParentDir + File.separator + direction + fileName+"_s"+stiffness+"_f"+filterSize+"_o"+offset+"_d"+depth);
         Files.createDirectory(resultDir);
         return resultDir.toString();
     }
