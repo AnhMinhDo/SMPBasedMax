@@ -20,6 +20,8 @@ public class SMP_based_Max implements PlugIn {
         // default parameters for the dialog
         String currentFile = Prefs.get("SMP_based_Max.settings.currentFile", "");
         String currentDir = Prefs.get("SMP_based_Max.settings.currentDir", "");
+        String defaultOutputFolder = Prefs.get("SMP_based_Max.settings.defaultOutputFolder", "");
+        boolean defaultUseOutputFolder = Prefs.get("SMP_based_Max.settings.defaultUseOutputFolder", false);
         double defaultStiffness = Prefs.get("SMP_based_Max.settings.defaultStiffness",60);
         double defaultFilterSize =  Prefs.get("SMP_based_Max.settings.defaultFilterSize", 30);
         double defaultOffset = Prefs.get("SMP_based_Max.settings.defaultOffset", 7);
@@ -38,6 +40,8 @@ public class SMP_based_Max implements PlugIn {
             processOptions.addNumericField("Depth: MIP for N pixels into blanket [pixels]:  ", defaultDepth, 0);
             processOptions.addDirectoryField("Directory for MULTIPLE FILES", currentDir,30);
             processOptions.addFileField("File path for SINGLE FILE", currentFile, 30);
+            processOptions.addCheckbox("Use Output Folder", defaultUseOutputFolder);
+            processOptions.addDirectoryField("Output Folder",defaultOutputFolder,30);
             processOptions.showDialog();
             if (processOptions.wasCanceled()) return;
 
@@ -50,9 +54,13 @@ public class SMP_based_Max implements PlugIn {
             int depth = (int) processOptions.getNextNumber();
             String dirPath = processOptions.getNextString();
             String filePath = processOptions.getNextString();
+            boolean useOutputFolder = processOptions.getNextBoolean();
+            String outputPath = processOptions.getNextString();
             // save parameters to Prefs when plugin is closed
             Prefs.set("SMP_based_Max.settings.currentDir", dirPath);
             Prefs.set("SMP_based_Max.settings.currentFile",filePath);
+            Prefs.set("SMP_based_Max.settings.defaultOutputFolder",outputPath);
+            Prefs.set("SMP_based_Max.settings.defaultUseOutputFolder", useOutputFolder);
             Prefs.set("SMP_based_Max.settings.defaultStiffness", stiffness);
             Prefs.set("SMP_based_Max.settings.defaultFilterSize", filterSize);
             Prefs.set("SMP_based_Max.settings.defaultOffset", offset);
@@ -61,6 +69,8 @@ public class SMP_based_Max implements PlugIn {
             // update the values in while loop
             currentDir = dirPath;
             currentFile = filePath;
+            defaultOutputFolder = outputPath;
+            defaultUseOutputFolder = useOutputFolder;
             currentDirection = zStackDirection;
             defaultStiffness = stiffness;
             defaultFilterSize = filterSize;
@@ -160,6 +170,11 @@ public class SMP_based_Max implements PlugIn {
                     smpZmapTiff.saveAsTiff(resultDir + File.separator +
                             fileName + "_SMP_zmap" + "_s" + stiffness +
                             "_f" + filterSize + "_o" + offset + ".tif");
+                    if (depth == 0 && useOutputFolder) {
+                        projectedSMPImageTiff.saveAsTiff(outputPath +
+                                fileName + "_SMP" + "_s" + stiffness + "_f" + filterSize +
+                                "_o" + offset + ".tif");
+                    }
                     // Save SMP depth-adjusted image and zMap
                     if (depth != 0) {
                         FileSaver projectedSMPMIPImageTiff = new FileSaver(projectedSMPMIPImage);
@@ -172,6 +187,12 @@ public class SMP_based_Max implements PlugIn {
                                 fileName + "_SMPbasedMIP_zmap" + "_s" + stiffness +
                                 "_f" + filterSize + "_o" + offset +
                                 "_d" + depth + ".tif");
+                        if (useOutputFolder) {
+                            projectedSMPMIPImageTiff.saveAsTiff(outputPath +
+                                    fileName + "_SMP" + "_s" + stiffness + "_f" +
+                                    filterSize + "_o" + offset +
+                                    "_d" + depth + ".tif");
+                        }
                     }
                 } catch (IOException e) {
                     throw new RuntimeException(e);
