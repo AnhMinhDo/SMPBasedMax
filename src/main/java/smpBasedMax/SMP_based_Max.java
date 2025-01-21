@@ -5,7 +5,6 @@ import ij.ImagePlus;
 import ij.gui.GUI;
 import ij.gui.GenericDialog;
 import ij.plugin.PlugIn;
-import ij.process.StackConverter;
 import ij.io.FileSaver;
 import ij.Prefs;
 
@@ -126,20 +125,7 @@ public class SMP_based_Max implements PlugIn {
                 for (String filepath : validFilePath) {
                 // create imagePlus object fromm filePath
                 ImagePlus inputImage = new ImagePlus(filepath);
-                // check if stack is time series, perform flatten to create new stack without time dimension
-                inputImage = inputImage.getNFrames() > 1 ? ConvertUtil.convertTimeSeriesToStack(inputImage) : inputImage;
-                // convert RGB to grayScale
-                if (inputImage.getNChannels() > 1 ||
-                        (inputImage.getType() != ImagePlus.GRAY8 &&
-                                inputImage.getType() != ImagePlus.GRAY16 &&
-                                inputImage.getType() != ImagePlus.GRAY32)) {
-                    inputImage = SmpBasedMaxUtil.RGBStackToGrayscaleStack(inputImage); // perform conversion
-                }
-                // convert to 16 bit gray scale
-                if (inputImage.getType() != ImagePlus.GRAY16) {
-                    StackConverter stackConverter = new StackConverter(inputImage);
-                    stackConverter.convertToGray16();
-                }
+                inputImage = SmpBasedMaxUtil.preProcessInputImage(inputImage);
                 // ZProjecting MIP
                 MaxIntensityProjection projector = new MaxIntensityProjection(inputImage);
                 ImagePlus projectedImage = projector.doProjection();
