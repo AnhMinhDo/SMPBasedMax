@@ -55,6 +55,8 @@ public class SMProjection {
         return projector.getZmap();
     }
 
+    public FloatProcessor getEnvMax(){return envMax;}
+
     public void placeSmoothSheet () {
         // get the references to the float array of ImageProcessor Object
         float[] envMaxzValues = (float[])this.envMax.getPixels();
@@ -184,7 +186,6 @@ public class SMProjection {
             }
         }
     }
-
 
 }
 
