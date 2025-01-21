@@ -4,6 +4,7 @@ package smpBasedMax;
 import ij.ImagePlus;
 import ij.ImageStack;
 import ij.plugin.ChannelSplitter;
+import ij.process.StackConverter;
 
 import java.util.ArrayList;
 
@@ -130,6 +131,24 @@ public class SmpBasedMaxUtil {
 
     public static float calculateBrightnessFromRGB(short redValue, short greenValue, short blueValue) {
         return (float)(0.2125*redValue + 0.7154*greenValue + 0.0721*blueValue);
+    }
+
+    public static ImagePlus preProcessInputImage(ImagePlus inputImage){
+        // check if stack is time series, perform flatten to create new stack without time dimension
+        inputImage = inputImage.getNFrames() > 1 ? ConvertUtil.convertTimeSeriesToStack(inputImage) : inputImage;
+        // convert RGB to grayScale
+        if (inputImage.getNChannels() > 1 ||
+                (inputImage.getType() != ImagePlus.GRAY8 &&
+                        inputImage.getType() != ImagePlus.GRAY16 &&
+                        inputImage.getType() != ImagePlus.GRAY32)) {
+            inputImage = SmpBasedMaxUtil.RGBStackToGrayscaleStack(inputImage); // perform conversion
+        }
+        // convert to 16 bit gray scale
+        if (inputImage.getType() != ImagePlus.GRAY16) {
+            StackConverter stackConverter = new StackConverter(inputImage);
+            stackConverter.convertToGray16();
+        }
+        return inputImage;
     }
 }
 
