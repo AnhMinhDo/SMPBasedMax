@@ -43,7 +43,7 @@ public class HandleSingleFile {
     }
 
     private void performProcessing(){
-        // create imagePlus object fromm filePath
+        // create imagePlus object from filePath
         ImagePlus inputImage = new ImagePlus(this.filePath);
         inputImage = SmpBasedMaxUtil.preProcessInputImage(inputImage);
         // ZProjecting MIP
