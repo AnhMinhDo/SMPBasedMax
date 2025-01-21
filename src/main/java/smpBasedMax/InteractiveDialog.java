@@ -38,7 +38,7 @@ public class InteractiveDialog {
         this.offset = offset;
         this.depth = depth;
 
-        String[] validFilePath = SmpBasedMaxUtil.handleSingleFile(filePath);
+        String[] validFilePath = SmpBasedMaxUtil.checkSingleFile(filePath);
         if (validFilePath == null) {
             IJ.showMessage("No file selected for Interactive Mode.");
             return;

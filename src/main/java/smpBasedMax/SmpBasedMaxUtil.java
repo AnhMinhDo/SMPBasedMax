@@ -18,7 +18,7 @@ import java.nio.file.Path;
 
 public class SmpBasedMaxUtil {
 
-    static public String[] handleSingleFile(String filePath){
+    static public String[] checkSingleFile(String filePath){
         if (isTiffExtension(filePath)) {
             return new String[]{filePath};
         } else {
@@ -26,7 +26,7 @@ public class SmpBasedMaxUtil {
         }
     }
 
-    static public String[] handleMultipleFiles (String dirPath){
+    static public String[] checkMultipleFile(String dirPath){
         String[] filePaths = listFilesInDirectory(dirPath);
         if (filePaths == null) return null;
         // check for .tiff file extension
