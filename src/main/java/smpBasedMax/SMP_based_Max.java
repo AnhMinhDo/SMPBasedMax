@@ -26,10 +26,11 @@ public class SMP_based_Max implements PlugIn {
         // extract all the values in ProcessingMode ENUM class
         String[] modes = Stream.of(ProcessingMode.values()).map(Enum::name).toArray(String[]::new);
         ZStackDirection currentDirection = ZStackDirection.IN;
+        String currentMode = modes[0];
         while(true) { // keep the dialog open after each run
             // dialog with button to choose Single file or Multiple file
             GenericDialog processOptions = GUI.newNonBlockingDialog("SMP based Max");
-            processOptions.addRadioButtonGroup("Process Mode: ",modes,1,ProcessingMode.values().length, modes[0]);
+            processOptions.addRadioButtonGroup("Process Mode: ",modes,1,ProcessingMode.values().length, currentMode);
             processOptions.addEnumChoice("Direction of z-stack", ZStackDirection.values(), currentDirection);
             processOptions.addNumericField("Enter envelope stiffness [pixels]:  ", defaultStiffness, 0);
             processOptions.addNumericField("Enter final filter size [pixels]: ", defaultFilterSize, 0);
@@ -69,6 +70,7 @@ public class SMP_based_Max implements PlugIn {
             Prefs.set("SMP_based_Max.settings.defaultOffset", offset);
             Prefs.set("SMP_based_Max.settings.defaultDepth", depth);
             // update the values in while loop
+            currentMode = chosenMode.name();
             currentDir = dirPath;
             currentFile = filePath;
             defaultUseSecondFile = useSecondFile;
