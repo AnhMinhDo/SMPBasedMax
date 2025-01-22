@@ -87,7 +87,7 @@ public class SMP_based_Max implements PlugIn {
             if (chosenMode == ProcessingMode.INTERACTIVE) {
                 String[] validFilePath = SmpBasedMaxUtil.checkSingleFile(filePath);
                 if (validFilePath == null) {
-                    IJ.showMessage("No file selected for Single File option.");
+                    IJ.showMessage("Selected File is not valid");
                     return;
                 }
                 new InteractiveDialog(validFilePath[0],
@@ -103,7 +103,7 @@ public class SMP_based_Max implements PlugIn {
             if (chosenMode == ProcessingMode.SINGLE_FILE) {
                 String[] validFilePath = SmpBasedMaxUtil.checkSingleFile(filePath);
                 if (validFilePath == null) {
-                    IJ.showMessage("No file selected for Single File option.");
+                    IJ.showMessage("Selected File is not valid");
                     return;
                 }
                 HandleSingleFile hsf = new HandleSingleFile(validFilePath[0],
@@ -134,70 +134,6 @@ public class SMP_based_Max implements PlugIn {
                         depth);
                 hmf.process();
             }
-//            // Process image(s) in non-interactive mode
-//            if (chosenMode != ProcessingMode.INTERACTIVE) {
-//                // Perform MIP with filePath in filePathArray
-//                for (String filepath : validFilePath) {
-//                // create imagePlus object fromm filePath
-//                ImagePlus inputImage = new ImagePlus(filepath);
-//                inputImage = SmpBasedMaxUtil.preProcessInputImage(inputImage);
-//                // ZProjecting MIP
-//                MaxIntensityProjection projector = new MaxIntensityProjection(inputImage);
-//                ImagePlus projectedImage = projector.doProjection();
-//                ImagePlus zMap = projector.getZmap();
-//                // ZProjecting SMP
-//                SMProjection smProjector = new SMProjection(inputImage, zMap, stiffness, filterSize, zStackDirection, offset);
-//                ImagePlus projectedSMPImage = smProjector.doSMProjection();
-//                ImagePlus smpZmap = smProjector.getSMPZmap();
-//                // SMP-MIP if depth !=0
-//                SMP_MIP_Projection smpMipProjector = new SMP_MIP_Projection(inputImage, smpZmap, depth, zStackDirection);
-//                ImagePlus projectedSMPMIPImage = smpMipProjector.doProjection();
-//                ImagePlus smpMipZmap = smpMipProjector.getZmap();
-//
-//                // Save files to output directory
-//                try {
-//                    // prepare the directory for output
-//                    String resultDir = SmpBasedMaxUtil.createResultDir(filepath,
-//                            zStackDirection,
-//                            stiffness,
-//                            filterSize,
-//                            offset,
-//                            depth);
-//                    String fileName = SmpBasedMaxUtil.extractFilename(filepath);
-//                    // Save MIP projected Image and zMap
-//                    FileSaver projectedImageTiff = new FileSaver(projectedImage);
-//                    FileSaver zMapTiff = new FileSaver(zMap);
-//                    projectedImageTiff.saveAsTiff(resultDir + File.separator +
-//                            fileName + "_MIP" + ".tif");
-//                    zMapTiff.saveAsTiff(resultDir + File.separator +
-//                            fileName + "_MIP_zmap" + ".tif");
-//                    // Save SMP projected image and zMap
-//                    FileSaver projectedSMPImageTiff = new FileSaver(projectedSMPImage);
-//                    FileSaver smpZmapTiff = new FileSaver(smpZmap);
-//                    projectedSMPImageTiff.saveAsTiff(resultDir + File.separator +
-//                            fileName + "_SMP" + "_stiffness" + stiffness + "_filterSize" + filterSize +
-//                            "_offSet" + offset + ".tif");
-//                    smpZmapTiff.saveAsTiff(resultDir + File.separator +
-//                            fileName + "_SMP_zmap" + "_stiffness" + stiffness +
-//                            "_filterSize" + filterSize + "_offSet" + offset + ".tif");
-//                    // Save SMP depth-adjusted image and zMap
-//                    if (depth != 0) {
-//                        FileSaver projectedSMPMIPImageTiff = new FileSaver(projectedSMPMIPImage);
-//                        FileSaver smpMipZmapTiff = new FileSaver(smpMipZmap);
-//                        projectedSMPMIPImageTiff.saveAsTiff(resultDir + File.separator +
-//                                fileName + "_SMPbasedMIP" + "_stiffness" + stiffness +
-//                                "_filterSize" + filterSize + "_offSet" + offset +
-//                                "_depth" + depth + ".tif");
-//                        smpMipZmapTiff.saveAsTiff(resultDir + File.separator +
-//                                fileName + "_SMPbasedMIP_zmap" + "_stiffness" + stiffness +
-//                                "_filterSize" + filterSize + "_offSet" + offset +
-//                                "_depth" + depth + ".tif");
-//                    }
-//                } catch (IOException e) {
-//                    throw new RuntimeException(e);
-//                }
-//                }
-//            }
         }
     }
 }

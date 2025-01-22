@@ -16,6 +16,7 @@ public class SMProjection {
     private final int numberOfRows;
     private final int numberOfColumns;
     private FloatProcessor envMax;
+    private float[] envMaxzValues;
     private final int distance;
     private final int numberOfSlices;
     private final int radius;
@@ -44,7 +45,7 @@ public class SMProjection {
 
     public ImagePlus doSMProjection() {
         placeSmoothSheet();
-        float[] envMaxzValues = (float[])this.envMax.getPixels();
+        this.envMaxzValues = (float[])this.envMax.getPixels();
         ImageStack imageStackAfterApplySmoothSheet = smpProjection(this.originalImage,envMaxzValues, this.offSet);
         ImagePlus imageAfterApplySmoothSheet = new ImagePlus(this.originalImage.getTitle(), imageStackAfterApplySmoothSheet);
         this.projector = new MaxIntensityProjection(imageAfterApplySmoothSheet);
@@ -55,7 +56,7 @@ public class SMProjection {
         return projector.getZmap();
     }
 
-    public FloatProcessor getEnvMax(){return envMax;}
+    public float[] getEnvMax(){return Arrays.copyOf(this.envMaxzValues, this.envMaxzValues.length);}
 
     public void placeSmoothSheet () {
         // get the references to the float array of ImageProcessor Object
@@ -75,14 +76,14 @@ public class SMProjection {
         rf.rank(this.envMax,this.radius,RankFilters.MEDIAN,0,50f,false,false);
     }
 
-    public static ImageStack smpProjection (ImagePlus originalImage,
+    public static ImageStack smpProjection (ImagePlus inputImage,
                                             float[] optimalSmoothSheet,
                                             int offSet){
-        ImageStack smpImageStack = ImageStack.create(originalImage.getWidth(),
-                originalImage.getHeight(),
-                originalImage.getNSlices(),
+        ImageStack smpImageStack = ImageStack.create(inputImage.getWidth(),
+                inputImage.getHeight(),
+                inputImage.getNSlices(),
                 16);
-        ImageStack originalImageStack = originalImage.getStack();
+        ImageStack originalImageStack = inputImage.getStack();
         int fuzziness = 1;
         float[] lowerBound = new float[optimalSmoothSheet.length];
         float[] upperBound = new float[optimalSmoothSheet.length];
@@ -90,7 +91,7 @@ public class SMProjection {
             lowerBound[i] = optimalSmoothSheet[i]-fuzziness+offSet;
             upperBound[i] = optimalSmoothSheet[i]+fuzziness+offSet;
         }
-        for (int currentSlice = 1; currentSlice <= originalImage.getNSlices(); currentSlice++) {
+        for (int currentSlice = 1; currentSlice <= inputImage.getNSlices(); currentSlice++) {
             chooseQualifiedPixels((short[])originalImageStack.getPixels(currentSlice),
                     (short[])smpImageStack.getPixels(currentSlice),
                     lowerBound,
