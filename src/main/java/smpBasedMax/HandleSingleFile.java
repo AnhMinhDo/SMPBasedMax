@@ -26,11 +26,39 @@ public class HandleSingleFile {
     private ImagePlus smpMipZmap;
 
     public HandleSingleFile(String filePath,
+                            ZStackDirection zStackDirection,
+                            int stiffness,
+                            int filterSize,
+                            int offset,
+                            int depth) {
+        this.filePath = filePath;
+        this.zStackDirection = zStackDirection;
+        this.useSecondFile = false;
+        this.secondFilePath = "";
+        this.useThirdFile = false;
+        this.thirdFilePath = "";
+        this.stiffness = stiffness;
+        this.filterSize = filterSize;
+        this.offset = offset;
+        this.depth = depth;
+    }
+
+    public HandleSingleFile(String filePath,
+                            ZStackDirection zStackDirection,
+                            int stiffness,
+                            int filterSize,
+                            int offset,
+                            int depth,
                             boolean useSecondFile,
                             String secondFilePath,
                             boolean useThirdFile,
                             String thirdFilePath) {
         this.filePath = filePath;
+        this.zStackDirection = zStackDirection;
+        this.stiffness = stiffness;
+        this.filterSize = filterSize;
+        this.offset = offset;
+        this.depth = depth;
         this.useSecondFile = useSecondFile;
         this.secondFilePath = secondFilePath;
         this.useThirdFile = useThirdFile;
@@ -41,6 +69,11 @@ public class HandleSingleFile {
         performProcessing();
         saveOutputToFile();
     }
+
+    public void setFilePath(String filePath) {
+        this.filePath = filePath;
+    }
+
 
     private void performProcessing(){
         // create imagePlus object from filePath
