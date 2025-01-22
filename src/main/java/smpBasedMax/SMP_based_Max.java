@@ -29,10 +29,11 @@ public class SMP_based_Max implements PlugIn {
         // extract all the values in ProcessingMode ENUM class
         String[] modes = Stream.of(ProcessingMode.values()).map(Enum::name).toArray(String[]::new);
         ZStackDirection currentDirection = ZStackDirection.IN;
+        String currentMode = modes[0];
         while(true) { // keep the dialog open after each run
             // dialog with button to choose Single file or Multiple file
             GenericDialog processOptions = GUI.newNonBlockingDialog("SMP based Max");
-            processOptions.addRadioButtonGroup("Process Mode: ",modes,1,ProcessingMode.values().length, modes[0]);
+            processOptions.addRadioButtonGroup("Process Mode: ",modes,1,ProcessingMode.values().length, currentMode);
             processOptions.addEnumChoice("Direction of z-stack", ZStackDirection.values(), currentDirection);
             processOptions.addNumericField("Enter envelope stiffness [pixels]:  ", defaultStiffness, 0);
             processOptions.addNumericField("Enter final filter size [pixels]: ", defaultFilterSize, 0);
@@ -67,6 +68,7 @@ public class SMP_based_Max implements PlugIn {
             Prefs.set("SMP_based_Max.settings.defaultDepth", depth);
 
             // update the values in while loop
+            currentMode = chosenMode.name();
             currentDir = dirPath;
             currentFile = filePath;
             defaultOutputFolder = outputPath;
@@ -77,8 +79,15 @@ public class SMP_based_Max implements PlugIn {
             defaultOffset = offset;
             defaultDepth = depth;
 
+            String[] validFilePath = new String[0];
+
             // Interactive Mode
             if (chosenMode == ProcessingMode.INTERACTIVE) {
+                validFilePath = SmpBasedMaxUtil.handleSingleFile(filePath);
+                if (validFilePath == null) {
+                    IJ.showMessage("Selected file is not valid");
+                    return;
+                }
                 new InteractiveDialog(filePath,
                                     zStackDirection,
                                     stiffness,
@@ -89,11 +98,10 @@ public class SMP_based_Max implements PlugIn {
             }
 
             // If users choose Single File
-            String[] validFilePath = new String[0];
-            if (chosenMode == ProcessingMode.SINGLE_FILE | chosenMode == ProcessingMode.INTERACTIVE) {
+            if (chosenMode == ProcessingMode.SINGLE_FILE) {
                 validFilePath = SmpBasedMaxUtil.handleSingleFile(filePath);
                 if (validFilePath == null) {
-                    IJ.showMessage("No file selected for Single File option.");
+                    IJ.showMessage("Selected file is not valid");
                     return;
                 }
             }
@@ -101,13 +109,8 @@ public class SMP_based_Max implements PlugIn {
             // if users choose Multiple Files
             if (chosenMode == ProcessingMode.MULTIPLE_FILES) {
                 validFilePath = SmpBasedMaxUtil.handleMultipleFiles(dirPath);
-                if (validFilePath != null) {
-                    String[] fileNames = new String[validFilePath.length];
-                    for (int i = 0; i < validFilePath.length; i++) {
-                        fileNames[i] = SmpBasedMaxUtil.extractFilename(validFilePath[i]);
-                    }
-                } else {
-                    IJ.showMessage("No file selected for multiple-files Option.");
+                if (validFilePath == null) {
+                    IJ.showMessage("No file selected for multiple-files Option");
                     return;
                 }
             }
