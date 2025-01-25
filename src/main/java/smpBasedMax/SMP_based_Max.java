@@ -134,7 +134,7 @@ public class SMP_based_Max implements PlugIn {
                     StackConverter stackConverter = new StackConverter(inputImage);
                     stackConverter.convertToGray16();
                 }
-                // ZProjecting MIP
+                // ZProjecting MIP - Maximum Intensity Projection
                 MaxIntensityProjection projector = new MaxIntensityProjection(inputImage);
                 ImagePlus projectedImage = projector.doProjection();
                 ImagePlus zMap = projector.getZmap();
