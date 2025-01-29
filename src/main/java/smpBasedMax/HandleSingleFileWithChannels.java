@@ -4,9 +4,14 @@ import ij.IJ;
 import ij.ImagePlus;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 
 public class HandleSingleFileWithChannels {
+    File[] mainFileAndSubDir;
     private File[] otherChannels;
     private File mainChannel;
     private File subDir;
@@ -24,26 +29,28 @@ public class HandleSingleFileWithChannels {
                                int offset,
                                int depth) {
         // get main file and subdirectory
-        File[] mainFileAndSubDir = dirPath.listFiles();
+        this.mainFileAndSubDir = dirPath.listFiles();
         //handle empty directory
         if (mainFileAndSubDir == null) {IJ.showMessage("No files found in " + dirPath); return;}
-        // Ensure the directory only have one main file and one subdirectory
-            if (mainFileAndSubDir.length != 2) {
-                IJ.showMessage("The directory is not properly organized as required");
-                return;
-            }
-        // get other mainChannel and subdirectory
+        // get mainChannel and subdirectory
         for (File f : mainFileAndSubDir) {
-            if (f.isDirectory()) {
+            if (f.isDirectory() && f.getName().equals("Channels")) {
                 this.subDir = f;
-            } else {
+            } else if (!f.isDirectory() && SmpBasedMaxUtil.isTiffExtension(f.getName())) {
                 this.mainChannel = f;
             }
         }
-        // get other channels in subdirectory
-        if (subDir != null) {
-            this.otherChannels = subDir.listFiles();
-        } else {IJ.showMessage("No additional channels are found in the subdirectory"); return;}
+        // Return error when there is no Channels dir
+        if(this.subDir == null) {
+            IJ.showMessage("No Directory with the name Channels in " + dirPath + System.lineSeparator() +
+                "Please add all additional channel images in a subdirectory with the name \"Channels\"," + System.lineSeparator()+
+                    "and this subdirectory should be placed inside " + dirPath);
+            return;
+        }
+        // get other channels in subdirectory; condition: they are not a directory and tif files
+        this.otherChannels = subDir.listFiles(pathname -> pathname.isFile() && SmpBasedMaxUtil.isTiffExtension(pathname.getName()));
+        if (otherChannels == null) {IJ.showMessage("No tif file found in " + subDir.getAbsolutePath()); return;}
+        // assign other attributes
         this.zStackDirection = zStackDirection;
         this.stiffness = stiffness;
         this.filterSize = filterSize;
@@ -51,16 +58,30 @@ public class HandleSingleFileWithChannels {
         this.depth = depth;
     }
     public void process(){
-        performProcessing();
+        if(this.subDir != null &&
+        this.mainFileAndSubDir != null &&
+        this.otherChannels != null) {
+            performProcessing();
+        }
     }
 
     private void performProcessing(){
         HandleSingleFile hsf = new HandleSingleFile(mainChannel.getAbsolutePath(), zStackDirection, stiffness, filterSize, offset, depth);
         hsf.process();
         float[] envMaxzValues = hsf.getEnvMaxzValues();
-        File outputDir = new File(subDir.getAbsolutePath() + File.separator + "output");
+        Path outDirPath = Paths.get(subDir.getAbsolutePath() + File.separator + "output");
+        if(Files.notExists(outDirPath)) {
+            try {
+                Files.createDirectories(outDirPath);
+            } catch (IOException e) {
+                IJ.showMessage("Could not create output directory" + System.lineSeparator() +
+                        e.getMessage());
+                return;
+            }
+        }
+        File outDir = outDirPath.toFile();
         for(File otherChannel : this.otherChannels) {
-            processOtherChannel(outputDir,
+            processOtherChannel(outDir,
                                 otherChannel,
                                 envMaxzValues,
                                 this.zStackDirection,
@@ -80,6 +101,7 @@ public class HandleSingleFileWithChannels {
                                             int offset,
                                             int depth){
         ImagePlus channelImage = new ImagePlus(originalChannel.getAbsolutePath());
+        SmpBasedMaxUtil.preProcessInputImage(channelImage);
         ManifoldBypassProjection mbProjector = new ManifoldBypassProjection(channelImage,envMaxzValues,offset);
         ImagePlus projection = mbProjector.doManifoldBypassProjection();
         ImagePlus zMapProjection = mbProjector.getManifoldBypassZmap();
