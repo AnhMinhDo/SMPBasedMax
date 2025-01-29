@@ -46,10 +46,6 @@ public class SMP_based_Max implements PlugIn {
             int depth = (int) processOptions.getNextNumber();
             String dirPath = processOptions.getNextString();
             String filePath = processOptions.getNextString();
-            boolean useSecondFile = processOptions.getNextBoolean();
-            String secondFilePath = processOptions.getNextString();
-            boolean useThirdFile = processOptions.getNextBoolean();
-            String thirdFilePath = processOptions.getNextString();
             // save parameters to Prefs when plugin is closed
             Prefs.set("SMP_based_Max.settings.currentDir", dirPath);
             Prefs.set("SMP_based_Max.settings.currentFile",filePath);
