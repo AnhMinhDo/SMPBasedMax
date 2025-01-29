@@ -6,7 +6,6 @@ import ij.gui.GenericDialog;
 import ij.plugin.PlugIn;
 import ij.Prefs;
 
-import java.nio.file.NoSuchFileException;
 import java.util.stream.Stream;
 
 
