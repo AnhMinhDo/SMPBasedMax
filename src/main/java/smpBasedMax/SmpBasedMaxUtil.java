@@ -1,8 +1,10 @@
 package smpBasedMax;
 
 
+import ij.IJ;
 import ij.ImagePlus;
 import ij.ImageStack;
+import ij.io.FileSaver;
 import ij.plugin.ChannelSplitter;
 import ij.process.StackConverter;
 
@@ -16,7 +18,6 @@ import java.nio.file.Paths;
 import java.nio.file.Path;
 
 
-
 public class SmpBasedMaxUtil {
 
     static public String[] checkSingleFile(String filePath){
@@ -27,17 +28,18 @@ public class SmpBasedMaxUtil {
         }
     }
 
-    static public String[] checkMultipleFile(String dirPath){
+    static public String[] checkMultipleFile(String dirPath) {
         String[] filePaths = listFilesInDirectory(dirPath);
-        if (filePaths == null) return null;
         // check for .tiff file extension
         ArrayList<String> tiffFilePaths = new ArrayList<>();
+        if(filePaths == null) {
+            IJ.showMessage("No files found in " + dirPath); return null;}
         for (String filePath : filePaths) {
             if (isTiffExtension(filePath)) {
                 tiffFilePaths.add(filePath);
             }
         }
-        if (tiffFilePaths.isEmpty()) return null;
+        if (tiffFilePaths.isEmpty()) { IJ.showMessage("No .tiff file in " + dirPath); return null;}
         return tiffFilePaths.toArray(new String[0]);
     }
 
@@ -149,6 +151,24 @@ public class SmpBasedMaxUtil {
             stackConverter.convertToGray16();
         }
         return inputImage;
+    }
+
+    public static void savePostProcessImagePlus(ImagePlus projectedImgOrZmap,
+                                                OutputTypeName outputTypeName,
+                                                 String resultDir,
+                                                 String fileName,
+                                                 int stiffness,
+                                                 int filterSize,
+                                                 int offset,
+                                                 int depth) {
+        FileSaver projectedImageTiff = new FileSaver(projectedImgOrZmap);
+        // add separator if needed
+        if(!resultDir.endsWith(File.separator)){resultDir += File.separator;}
+        // perform the saving step
+        projectedImageTiff.saveAsTiff(resultDir +
+                fileName + "_" + outputTypeName.name() + "_stiffness" + stiffness +
+                "_filterSize" + filterSize + "_offSet" + offset +
+                "_depth" + depth + ".tif");
     }
 }
 

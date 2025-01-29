@@ -26,7 +26,7 @@ public class HandleMultipleFile {
     }
 
     public void process(){
-        HandleSingleFile hsf = new HandleSingleFile(filePaths[1], zStackDirection,
+        HandleSingleFile hsf = new HandleSingleFile(filePaths[0], zStackDirection,
                 stiffness, filterSize,
                 offset, depth);
         for (int i = 0; i < filePaths.length; i++) {
