@@ -104,20 +104,4 @@ public class InteractiveDialog {
         }
     }
 
-    private void updateOutputImage(){
-        outputImage.close();
-        System.err.println("updateOutputImage, complete update the attributes");
-        // ZProjecting SMP
-        SMProjection smProjector = new SMProjection(inputImage, zMap, stiffness, filterSize, zStackDirection, offset);
-        this.projectedSMPImage = smProjector.doSMProjection();
-        this.smpZmap = smProjector.getSMPZmap();
-        System.err.println("updateOutputImage, complete ZProjecting SMP");
-        // SMP-MIP if depth !=0
-        SMP_MIP_Projection smpMipProjector = new SMP_MIP_Projection(inputImage, smpZmap, depth, zStackDirection);
-        this.projectedSMPMIPImage = smpMipProjector.doProjection();
-        System.err.println("updateOutputImage, complete SMP-MIP");
-        outputImage = depth>0 ? this.projectedSMPMIPImage : this.projectedSMPImage;
-        outputImage.show();
-    }
-
 }
