@@ -3,12 +3,12 @@ package smpBasedMax;
 
 public class HandleMultipleFile {
 
-    private String[] filePaths;
-    private int stiffness;
-    private int filterSize;
-    private ZStackDirection zStackDirection;
-    private int offset;
-    private int depth;
+    private final String[] filePaths;
+    private final int stiffness;
+    private final int filterSize;
+    private final ZStackDirection zStackDirection;
+    private final int offset;
+    private final int depth;
 
 
     public HandleMultipleFile(String[] filePaths,
@@ -26,12 +26,12 @@ public class HandleMultipleFile {
     }
 
     public void process(){
-        HandleSingleFile hsf = new HandleSingleFile(filePaths[1], zStackDirection,
+        HandleSingleFile hsf = new HandleSingleFile(filePaths[0], zStackDirection,
                 stiffness, filterSize,
                 offset, depth);
-        for (int i = 0; i < filePaths.length; i++) {
-          hsf.setFilePath(filePaths[i]);
-          hsf.process();
+        for (String filePath : filePaths) {
+            hsf.setFilePath(filePath);
+            hsf.process();
         }
     }
 }
