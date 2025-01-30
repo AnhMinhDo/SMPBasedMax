@@ -25,7 +25,27 @@ Below is the interface when the plugin is used on Linux Mint 22.
 6. Output folder(s) is created at the same directory of the input .tiff file(s)
 7. Output includes: Maximum Intensity projected Image(MIP), MIP corresponding z_map, Smooth Manifold MIP-based projected image(SMP), SMP corresponding z_map; if depth parameter is not 0, SMP-adjusted projected image and corresponding z_map
 ## Features:
-
+### Process Mode:
+**Single File**: Process only 1 file or 1 file with additional channels
+**Multiple Files**: Process multiple files or multiple files with respective additional channels for the same parameter set
+**Interactive**: used for parameter tuning, processed Image is shown in new window and updated when parameters are adjust the result are not saved; this is to ensure fast process and update.
+### Direction of Z-Stack:
+The Z-stack slices are ordered based on the Z-position in the 3D space.
+**IN**: Top-to-Bottom: When the slices are taken from the top of the sample to the bottom, the Z-stack increases in value as you go deeper.
+**OUT**: When the slices are taken from the bottom of the sample to the top.
+### Stiffness:
+This is the constraint for the minimum distance between consecutive peaks.
+In the Smooth manifold process, signal peak is selected based on the distance with the nearest neighbor peaks.
+High intensity peaks have higher priority.
+The higher the stiffness, the fewer peaks are selected; result in less noisy projected image but also fewer details.
+### Filter Size:
+Filter size for Gaussian smoothing filters to reduce noise after the raw smoothing process.
+### Offset:
+Number to slices counting from the current smp slice to be performed MIP.
+The higher the offset, the more detail from neighboring slice is capture.
+This parameter is needed to be tuned for optimal result.
+### Depth:
+Number of steps to be moved after applied offset; used to move the projected image up the surface or deep in the sample
 ## License:
 This project is licensed under the GNU General Public License v3.0. See the [LICENSE](https://github.com/AnhMinhDo/SMPBasedMax/blob/main/LICENSE.txt) file for more details.
 
