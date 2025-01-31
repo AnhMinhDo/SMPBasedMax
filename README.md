@@ -46,6 +46,17 @@ The higher the offset, the more detail from neighboring slice is capture.
 This parameter is needed to be tuned for optimal result.
 ### Depth:
 Number of steps to be moved after applied offset; used to move the projected image up the surface or deep in the sample
+### Directory for MULTIPLE FILES:
+Choose the directory for MULTIPLE_FILE MODE
+### File path for SINGLE FILE:
+Choose the file path for SINGLE_FILE MODE
+### Project Additional channels:
+Tick this if the smp z-map is used to applied for other channels of the same sample or image with the exact same dimension of the main channel.
+**IMPORTANT**: Additional channel images must be in a "Channels" folder(the folder with the exact name "Channels""), located alongside the main channel image.  
+### Additional channel directory:
+If users choose SINGLE_FILE and Additional channels: specify the sample folder
+if users choose MULTIPLE_FILES and Additional channels: specify the parent folder(the folder contains multiple sample Folder)
+[Structure_additional_channels_mode](src/main/resources/Folder_Structure_additional_channels_mode.png)
 ## License:
 This project is licensed under the GNU General Public License v3.0. See the [LICENSE](https://github.com/AnhMinhDo/SMPBasedMax/blob/main/LICENSE.txt) file for more details.
 
