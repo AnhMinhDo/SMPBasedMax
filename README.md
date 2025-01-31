@@ -52,7 +52,9 @@ Choose the directory for MULTIPLE_FILE MODE
 Choose the file path for SINGLE_FILE MODE
 ### Project Additional channels:
 Tick this if the smp z-map is used to applied for other channels of the same sample or image with the exact same dimension of the main channel.
+
 **IMPORTANT**: Additional channel images must be in a "Channels" folder (the folder with the exact name "Channels"), located alongside the main channel image.  
+
 ### Additional channel directory:
 SINGLE_FILE and Additional channels: specify the sample folder
 
