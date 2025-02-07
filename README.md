@@ -13,7 +13,7 @@ Below is the interface when the plugin is used on Linux Mint 22.
 ### Prerequisites and installation:
 1. If Fiji is not installed, download and install a version, preferably bundled with JRE 1.8 (https://imagej.net/software/fiji/).
    If you already have Fiji installed, ensure it uses Java 1.8 or later.
-2. Download the [SMP_based_Max.jar](https://github.com/AnhMinhDo/SMPBasedMax/releases/download/v0.1.1-beta/SMP_based_Max.jar) file 
+2. Download the [SMP_based_Max.zip](https://github.com/AnhMinhDo/SMPBasedMax/releases/download/v0.1.2-beta/SMP_based_Max.zip) file 
 3. Place the .jar file in the "plugins" folder of your Fiji installation
 4. Open Fiji
 ### Usage:
