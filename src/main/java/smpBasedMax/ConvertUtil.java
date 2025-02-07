@@ -2,6 +2,7 @@ package smpBasedMax;
 
 import ij.ImagePlus;
 import ij.ImageStack;
+import ij.process.ImageProcessor;
 
 public class ConvertUtil {
 
@@ -76,6 +77,17 @@ public class ConvertUtil {
             newArray[i] = original[indices[i]];
         }
         return newArray;
+    }
+
+    public static void convertTo8Bit(ImagePlus imp) {
+        // Get the image processor
+        ImageProcessor ip = imp.getProcessor();
+
+        // Convert to 8-bit
+        ImageProcessor byteProcessor = ip.convertToByte(true);
+
+        // Update the ImagePlus with the converted processor
+        imp.setProcessor(byteProcessor);
     }
 
 }
