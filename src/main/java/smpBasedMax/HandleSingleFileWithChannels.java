@@ -166,11 +166,11 @@ public class HandleSingleFileWithChannels {
         String fileName = originalChannel.getName();
         if (projectedSMPMIPImage == null) {
             // Save SMP projected image and zMap
-            SmpBasedMaxUtil.savePostProcessImagePlus(projectedSMPImage, OutputTypeName.SMP,resultDir,fileName, stiffness, filterSize, offset, depth);
+            SmpBasedMaxUtil.savePostProcessImagePlus(projectedSMPImage, OutputTypeName.SMP,resultDir,fileName, stiffness, filterSize, offset, depth,true);
             SmpBasedMaxUtil.savePostProcessImagePlus(smpZmap, OutputTypeName.SMP_ZMAP,resultDir,fileName, stiffness, filterSize, offset, depth);
         } else {
             // Save the depth-adjusted output
-            SmpBasedMaxUtil.savePostProcessImagePlus(projectedSMPMIPImage, OutputTypeName.SMPbasedMIP,resultDir,fileName, stiffness, filterSize, offset, depth);
+            SmpBasedMaxUtil.savePostProcessImagePlus(projectedSMPMIPImage, OutputTypeName.SMPbasedMIP,resultDir,fileName, stiffness, filterSize, offset, depth, true);
             SmpBasedMaxUtil.savePostProcessImagePlus(smpMipZmap, OutputTypeName.SMPbasedMIP_ZMAP,resultDir,fileName, stiffness, filterSize, offset, depth);
 
         }

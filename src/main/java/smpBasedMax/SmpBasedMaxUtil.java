@@ -152,6 +152,24 @@ public class SmpBasedMaxUtil {
         }
         return inputImage;
     }
+    public static void savePostProcessImagePlus(ImagePlus projectedImgOrZmap,
+                                                OutputTypeName outputTypeName,
+                                                String resultDir,
+                                                String fileName,
+                                                int stiffness,
+                                                int filterSize,
+                                                int offset,
+                                                int depth){
+        savePostProcessImagePlus(projectedImgOrZmap,
+                outputTypeName,
+                resultDir,
+                fileName,
+                stiffness,
+                filterSize,
+                offset,
+                depth,
+                false);
+    }
 
     public static void savePostProcessImagePlus(ImagePlus projectedImgOrZmap,
                                                 OutputTypeName outputTypeName,
@@ -160,7 +178,8 @@ public class SmpBasedMaxUtil {
                                                  int stiffness,
                                                  int filterSize,
                                                  int offset,
-                                                 int depth) {
+                                                 int depth,
+                                                boolean save8Bit) {
         FileSaver projectedImageTiff = new FileSaver(projectedImgOrZmap);
         // add separator if needed
         if(!resultDir.endsWith(File.separator)){resultDir += File.separator;}
@@ -169,6 +188,18 @@ public class SmpBasedMaxUtil {
                 fileName + "_" + outputTypeName.name() + "_stiffness" + stiffness +
                 "_filterSize" + filterSize + "_offSet" + offset +
                 "_depth" + depth + ".tif");
+        if(save8Bit){
+            ConvertUtil.convertTo8Bit(projectedImgOrZmap);
+            FileSaver projectedImg8bit = new FileSaver(projectedImgOrZmap);
+            if (!resultDir.endsWith(File.separator)) {
+                resultDir += File.separator;
+            }
+            // performing saving in 8 bit
+            projectedImg8bit.saveAsTiff(resultDir +
+                    fileName + "_" + outputTypeName.name() + "_stiffness" + stiffness +
+                    "_filterSize" + filterSize + "_offSet" + offset +
+                    "_depth" + depth + "_8bit" + ".tif");
+        }
     }
 }
 

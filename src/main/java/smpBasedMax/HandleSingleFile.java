@@ -89,11 +89,11 @@ public class HandleSingleFile {
             zMapTiff.saveAsTiff(resultDir + File.separator +
                     fileName + "_MIP_zmap" + ".tif");
             // Save SMP projected image and zMap
-            SmpBasedMaxUtil.savePostProcessImagePlus(this.projectedSMPImage, OutputTypeName.SMP,resultDir,fileName, stiffness, filterSize, offset, depth);
+            SmpBasedMaxUtil.savePostProcessImagePlus(this.projectedSMPImage, OutputTypeName.SMP,resultDir,fileName, stiffness, filterSize, offset, depth,true);
             SmpBasedMaxUtil.savePostProcessImagePlus(this.smpZmap, OutputTypeName.SMP_ZMAP,resultDir,fileName, stiffness, filterSize, offset, depth);
             // Save SMP depth-adjusted image and zMap
             if (depth != 0) {
-            SmpBasedMaxUtil.savePostProcessImagePlus(this.projectedSMPMIPImage, OutputTypeName.SMPbasedMIP,resultDir,fileName, stiffness, filterSize, offset, depth);
+            SmpBasedMaxUtil.savePostProcessImagePlus(this.projectedSMPMIPImage, OutputTypeName.SMPbasedMIP,resultDir,fileName, stiffness, filterSize, offset, depth,true);
             SmpBasedMaxUtil.savePostProcessImagePlus(this.smpMipZmap, OutputTypeName.SMPbasedMIP_ZMAP,resultDir,fileName, stiffness, filterSize, offset, depth);
             }
         } catch (IOException e) {
