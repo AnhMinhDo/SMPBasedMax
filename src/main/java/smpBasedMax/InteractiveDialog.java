@@ -10,7 +10,7 @@ import ij.process.StackConverter;
 
 public class InteractiveDialog {
     private ImagePlus inputImage;
-    private final ZStackDirection zStackDirection;
+    private ZStackDirection zStackDirection;
     private int stiffness;
     private int filterSize;
     private int offset;
@@ -78,12 +78,14 @@ public class InteractiveDialog {
         outputImage.show();
         while(true){
         interactiveGd = GUI.newNonBlockingDialog("Interactive Mode");
+        interactiveGd.addEnumChoice("Direction of z-stack", ZStackDirection.values(), zStackDirection);
         interactiveGd.addNumericField("Enter envelope stiffness [pixels]:  ", stiffness, 0);
         interactiveGd.addNumericField("Enter final filter size [pixels]: ", filterSize, 0);
         interactiveGd.addNumericField("Offset: N planes above (+) or below (-) blanket [pixels]:  ", offset, 0);
         interactiveGd.addNumericField("Depth: MIP for N pixels into blanket [pixels]:  ", depth, 0);
         interactiveGd.showDialog();
         if (interactiveGd.wasCanceled()) return;
+        this.zStackDirection = interactiveGd.getNextEnumChoice(ZStackDirection.class);
         this.stiffness = (int)interactiveGd.getNextNumber();
         this.filterSize = (int)interactiveGd.getNextNumber();
         this.offset = (int)interactiveGd.getNextNumber();
